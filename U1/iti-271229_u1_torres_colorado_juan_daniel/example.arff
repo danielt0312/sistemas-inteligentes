@@ -1,0 +1,10 @@
+@relation ejemplo
+
+@attribute edad numeric
+@attribute genero {masculino, femenino}
+@attribute ingreso numeric
+
+@data
+28, masculino, 50000
+35, femenino, 60000
+42, masculino, 75000
