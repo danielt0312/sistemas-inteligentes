@@ -3,27 +3,26 @@ from scipy.io import arff
 
 # Clase para leer archivos ARFF
 class ArffLector():
+    path = None
     # Constructor
     def __init__(self, path = None):
-        pass
+        self.path = path
+
+    # Definir direccion
+    def setPath(self, path):
+        self.path = path
 
     # Validación del archivo
-    def isValid(self, path = None):
-        return not (path == '' or path == None or len(path) == 0)
-            
+    def isValid(self):
+        return not (self.path == '' or self.path == None or len(self.path) == 0)
     
-    # Obtener la información
-    def getData(self, path):
-        data = arff.loadarff(path)
-        df = pd.DataFrame(data[0])
-        return df
-
-    # Abrir archivo
-    def openFile(self, path):
-        if (self.isValid(path)):
-            print ((self.getData(path)).head())
-        else:
-            print ("No es valido el directorio")
-
-lector = ArffLector()
-lector.openFile('example.arff')
+    # Cargar archivo y obtener DataFrame
+    def getDataFrame(self):
+        arff_file = arff.loadarff(self.path)
+        return pd.DataFrame(arff_file[0])
+    
+    # Obtener contenido
+    def getContent(self):
+        if (self.isValid()):
+            return self.getDataFrame().head()
+        return ("El directorio '" + self.path + "' es inválido.")
