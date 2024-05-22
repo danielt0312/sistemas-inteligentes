@@ -19,6 +19,10 @@ class Window(QWidget):
         btnSelectFile.clicked.connect(self.loadFile)
         layout.addWidget(btnSelectFile, 0, 0, 1, 4)
 
+        # Widget de gráfico
+        #self.graphicsView = QGraphicsView()
+        #layout.addWidget(self.graphicsView, 1, 0, 1, 4)
+
         # Boton para deseleccionar archivo
         btnSelectFile = QPushButton('Deseleccionar Archivo')
         #btnSelectFile.clicked.connect(self.loadFile)
