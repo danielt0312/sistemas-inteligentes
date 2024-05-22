@@ -42,13 +42,12 @@ class MyApp(QWidget):
 
 
     def getFileName(self):
-        file_filter = 'Data File (*.xlsx *.csv *.dat);; Excel File (*.xlsx *.xls);; Image File (*.png *.jpg)'
-        response = QFileDialog.getOpenFileName(
+        return QFileDialog.getOpenFileName(
             parent=self,
             caption='Select a file',
             directory=os.getcwd(),
-            filter=file_filter,
-            initialFilter='Excel File (*.xlsx *.xls)'
+            filter='ARFF File (*.arff);;',
+            initialFilter='ARFF File (*.arff)'
         )
         self.textbox.setText(str(response))
 
@@ -81,19 +80,3 @@ class MyApp(QWidget):
              initialFilter='Excel File (*.xlsx *.xls)'
          )
          self.textbox.setText(str(response))
-
-if __name__ == '__main__':
-    app = QApplication(sys.argv)
-    app.setStyleSheet('''
-        QWidget {
-            font-size: 20px;
-        }
-    ''')
-    
-    myApp = MyApp()
-    myApp.show()
-
-    try:
-        sys.exit(app.exec())
-    except SystemExit:
-        print('Closing Window...')
