@@ -1,0 +1,27 @@
+\usepackage[
+  hyperref=true,
+  url=true,
+  natbib=true,  
+  %style=bst/biblatex-sp-unified,
+  style=ieee,
+  %citestyle=\mycitestyle,
+  %refsection=chapter,
+  maxbibnames=99,
+  isbn=false,
+  doi=false,
+  eprint=false,
+  backend=biber,
+  %backend=bibtex,
+  % sorting=ydnt,  % sort in descending chronological order
+  indexing=cite,
+  labelnumber,  % for numeric bibliography in beamer
+  %toc=bib    % make bibliography appear in toc, incompatible with beamer
+]{biblatex}   % bibliography
+
+\addbibresource[datatype=bibtex]{references.bib}
+
+\newcommand{\insertBib}{
+  \printbibliography[
+    %notkeyword=this
+    ] 
+}
