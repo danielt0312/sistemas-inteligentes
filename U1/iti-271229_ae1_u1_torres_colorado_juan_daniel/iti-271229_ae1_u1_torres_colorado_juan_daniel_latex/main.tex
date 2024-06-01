@@ -309,7 +309,7 @@ There are two main approaches to running independent tasks within a PyQt applica
 \end{frame}
 
 \begin{frame}
-\frametitle{Threads and Procesess (2)}
+\frametitle{Threads and Processes (2)}
 \textit{Processes} use separate memory space (and an entirely separate Python interpreter). This side-steps any potential problems with the GIL, but at the cost of slower start-up times, larger memory overhead and complexity in sending/receiving data.
 \\ \\
 For simplicity's sake it usually makes sense to use threads, unless you have a good reason to use processes (see caveats later). Subprocesses in Qt are better suited to running and communicating with external programs.
