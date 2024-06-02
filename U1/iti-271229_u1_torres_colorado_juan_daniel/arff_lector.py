@@ -28,8 +28,7 @@ class ArffLector():
     def getColumns(self):
         if self.df is None:
             self.df = self.getDataFrame()
-        numeric_df = self.df.select_dtypes(include=[np.number])
-        return numeric_df.columns.tolist()
+        return self.df.select_dtypes(include=[np.number])
 
     # Buscar causa en caso de haber un problema
     def findCause(self):
@@ -55,7 +54,7 @@ class ArffLector():
         print("*********")
         print("columns", self.df.columns)
         print("*********")
-        print("length columns", len(self.df.columns))
+        print("length columns", len(self.df.columns.names))
         print("*********")
         print("shape:",self.df.shape)
         print("*********")

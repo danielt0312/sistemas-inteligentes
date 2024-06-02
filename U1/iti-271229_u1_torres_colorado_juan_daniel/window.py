@@ -12,6 +12,8 @@ class Window(QWidget):
         self.figure = None
         self.lector = ArffLector()
         self.cbxColumns = QComboBox()
+        self.cbxColumns.addItem('Seleccione un archivo primero.')
+        self.cbxColumns.setEnabled(False)
         self.cbxColumns.currentTextChanged.connect(self.selectedColumn)
 
         # Crear ventana con elementos de la interfaz
@@ -80,19 +82,20 @@ class Window(QWidget):
         self.cbxColumns.clear()
 
         # Validar columnas
-        columns = self.lector.getColumns()
-        if (len(columns) == 0 or len(columns) > 10):
-            if(len(columns) == 0):
-                self.cbxColumns.addItem('No hay columnas válidas en el archivo proporcionado.')
-            elif(len(columns) > 10):
-                self.cbxColumns.addItem('El limite máximo de columnas es de 10.\nPorfavor, modifique o cambie de archivo.')
+        rows, columns = self.lector.getColumns().shape
+        if (columns > 10 or columns == 0):
+            self.cbxColumns.addItem('No hay columnas válidas en el archivo proporcionado.')
+            if(columns == 0):
+                self.messageWarningPath('No se encuentra una longitud válida de filas o columnas.\nPorfavor, modifique o cambie de archivo.')
+            elif(columns > 10):
+                self.messageWarningPath('El limite máximo de columnas es de 10.\nPorfavor, modifique o cambie de archivo.')
                 
             self.cbxColumns.setEnabled(False)
             return
 
         # Ingresamos las columnas
         self.cbxColumns.setEnabled(True)
-        for column_name in columns:
+        for column_name in self.lector.getColumns():
             self.cbxColumns.addItem(column_name)
         
         
