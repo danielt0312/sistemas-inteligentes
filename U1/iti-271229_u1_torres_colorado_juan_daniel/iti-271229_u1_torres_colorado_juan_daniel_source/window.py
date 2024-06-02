@@ -75,6 +75,9 @@ class Window(QWidget):
             self.cbxColumns.addItem('Seleccione un archivo válido.')
             self.cbxColumns.setEnabled(False)
             return self.messageWarningPath(self.lector.getCause())
+        else:
+            return self.messageWarningPath(self.lector.getCause())
+
         
     # Cargar columnas al cbxColumns
     def loadItems(self):
