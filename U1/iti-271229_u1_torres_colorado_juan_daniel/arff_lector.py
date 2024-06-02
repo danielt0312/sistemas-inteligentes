@@ -15,7 +15,7 @@ class ArffLector():
         self.cause = 'No se ha encontrado algún problema'
         self.df = None
 
-    # Definir direccion
+    # Definir direccion del archivo
     def setPath(self, dir):
         self.dir = dir
 
@@ -24,10 +24,17 @@ class ArffLector():
         self.findCause()
         return not (self.dir == '' or self.dir == None or len(self.dir) == 0)
     
+    # Obtener solo columnas numericas
+    def getColumns(self):
+        if self.df is None:
+            self.df = self.getDataFrame()
+        numeric_df = self.df.select_dtypes(include=[np.number])
+        return numeric_df.columns.tolist()
+
     # Buscar causa en caso de haber un problema
     def findCause(self):
         if (self.dir == '' or self.dir == None or len(self.dir) == 0):
-            self.cause = 'El directorio no fue proporcionado.'
+            self.cause = 'El archivo no fue proporcionado.'
         else:
             self.cause = 'No se ha encontrado algún problema'
 
@@ -40,13 +47,15 @@ class ArffLector():
         arff_file = arff.loadarff(self.dir)
         return pd.DataFrame(arff_file[0])
     
-    # Mostrar el Análisis Exploratorio de Datos
+    # Mostrar el Análisis Exploratorio de todos los Datos proporcionados en el archivo
     def showEDA(self):
         self.df = self.getDataFrame()
-        print("Rows")
+        print("\nRows")
         print(self.df.head())
         print("*********")
-        print("columns",self.df.columns)
+        print("columns", self.df.columns)
+        print("*********")
+        print("length columns", len(self.df.columns))
         print("*********")
         print("shape:",self.df.shape)
         print("*********")
@@ -56,24 +65,26 @@ class ArffLector():
         # print(self.df["type"].value_counts())
         print("*********")
         print(self.df.describe())
+        print()
 
     # Mostrar figura del archivo cargado
-    def getFigure(self, df):
-        counts,bin_edges = np.histogram(df["edad"], bins = 10, density = True)
+    def getFigure(self, data):
+        counts,bin_edges = np.histogram(data, bins = 10, density = True)
         pdf = counts / (sum(counts))
-        cdf = np.cumsum(pdf)
 
-        print(pdf)
-        print(bin_edges)
+        print('\npdf: ', pdf)
+        print('bin_edges: ', bin_edges)
 
         # Figura de Matplotlib (grafica)
         figura = Figure()
         ejes = figura.add_subplot(111)
-        ejes.plot(bin_edges[1:], pdf)
-        ejes.plot(bin_edges[1:],cdf)
 
-        plt.plot(bin_edges[1:],pdf)
-        plt.plot(bin_edges[1:],cdf)
+        cdf = np.cumsum(pdf)
+        ejes.plot(bin_edges[1:], pdf)
+        ejes.plot(bin_edges[1:], cdf)
+
+        # plt.plot(bin_edges[1:],pdf)
+        # plt.plot(bin_edges[1:],cdf)
         # plt.show() # mostrar en la clase window, mas especificamente en el QGridLayout "grid"
 
         # Regresamos el lienzo

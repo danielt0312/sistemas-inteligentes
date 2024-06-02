@@ -1,4 +1,4 @@
-@relation ejemplo
+@relation example
 
 @attribute edad numeric
 @attribute genero {masculino, femenino}
