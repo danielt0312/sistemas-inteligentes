@@ -15,10 +15,6 @@ class ArffLector():
         self.cause = 'No se ha encontrado algún problema'
         self.df = None
 
-    # Definir direccion del archivo
-    def setPath(self, dir):
-        self.dir = dir
-
     # Validación del archivo
     def isValid(self):
         self.findCause()
@@ -26,7 +22,9 @@ class ArffLector():
 
     # Buscar causa en caso de haber un problema
     def findCause(self):
-        self.rows, self.columns = self.getColumns().shape
+        if (self.dir != '' and self.dir != None and len(self.dir) != 0):
+            self.rows, self.columns = self.getColumns().shape
+
         if (self.dir == '' or self.dir == None or len(self.dir) == 0):
             self.cause = 'El archivo no fue proporcionado.'
         elif (self.columns > 10):
@@ -87,10 +85,6 @@ class ArffLector():
         ejes.plot(bin_edges[1:], pdf, label='PDF', color='royalblue')
         ejes.plot(bin_edges[1:], cdf, label='CDF', color='darkorange')
         ejes.legend()
-
-        # plt.plot(bin_edges[1:],pdf)
-        # plt.plot(bin_edges[1:],cdf)
-        # plt.show() # mostrar en la clase window, mas especificamente en el QGridLayout "grid"
 
         # Regresamos el lienzo
         return FigureCanvas(figura)

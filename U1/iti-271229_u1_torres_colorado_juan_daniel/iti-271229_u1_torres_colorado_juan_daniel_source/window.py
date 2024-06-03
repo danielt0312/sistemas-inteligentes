@@ -5,6 +5,7 @@ from arff_lector import *
 
 # Clase para la interfaz visual y sus funciones
 class Window(QWidget):
+    # Constructor
     def __init__(self):
         super().__init__()
 
@@ -52,7 +53,7 @@ class Window(QWidget):
 
     # Cargar figura
     def loadFigure(self, column):
-        figureCanvas = self.lector.getFigure(self.lector.getDataFrame()[column])
+        figureCanvas = self.lector.getFigure(self.lector.getColumns()[column])
 
         # Validar figura
         if figureCanvas:
