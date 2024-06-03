@@ -1,6 +1,6 @@
 import pandas as pd
 import numpy as np
-import matplotlib.pyplot as plt
+# import matplotlib.pyplot as plt
 from scipy.io import arff
 
 # Generar figura
@@ -22,18 +22,17 @@ class ArffLector():
     # Validación del archivo
     def isValid(self):
         self.findCause()
-        return not (self.dir == '' or self.dir == None or len(self.dir) == 0)
-    
-    # Obtener solo columnas numericas
-    def getColumns(self):
-        if self.df is None:
-            self.df = self.getDataFrame()
-        return self.df.select_dtypes(include=[np.number])
+        return not (self.dir == '' or self.dir == None or len(self.dir) == 0 or self.columns > 10)
 
     # Buscar causa en caso de haber un problema
     def findCause(self):
+        self.rows, self.columns = self.getColumns().shape
         if (self.dir == '' or self.dir == None or len(self.dir) == 0):
             self.cause = 'El archivo no fue proporcionado.'
+        elif (self.columns > 10):
+            self.cause = 'El limite máximo de columnas es de 10.\nPorfavor, modifique o cambie de archivo.'
+        elif (self.columns == 0):
+            self.cause = 'No se encuentra una longitud válida de filas o columnas.\nPorfavor, modifique o cambie de archivo.'
         else:
             self.cause = 'No se ha encontrado algún problema'
 
@@ -46,6 +45,12 @@ class ArffLector():
         arff_file = arff.loadarff(self.dir)
         return pd.DataFrame(arff_file[0])
     
+    # Obtener solo columnas numericas
+    def getColumns(self):
+        if self.df is None:
+            self.df = self.getDataFrame()
+        return self.df.select_dtypes(include=[np.number])
+
     # Mostrar el Análisis Exploratorio de todos los Datos proporcionados en el archivo
     def showEDA(self):
         self.df = self.getDataFrame()
@@ -59,9 +64,6 @@ class ArffLector():
         print("shape:",self.df.shape)
         print("*********")
         print("Size:",self.df.size)
-        # print("*********")
-        # print("no. of samples available for each type") 
-        # print(self.df["type"].value_counts())
         print("*********")
         print(self.df.describe())
         print()
@@ -79,8 +81,12 @@ class ArffLector():
         ejes = figura.add_subplot(111)
 
         cdf = np.cumsum(pdf)
-        ejes.plot(bin_edges[1:], pdf)
-        ejes.plot(bin_edges[1:], cdf)
+        print('cdf: ', cdf)
+
+        # Agregar puntos y leyenda
+        ejes.plot(bin_edges[1:], pdf, label='PDF', color='royalblue')
+        ejes.plot(bin_edges[1:], cdf, label='CDF', color='darkorange')
+        ejes.legend()
 
         # plt.plot(bin_edges[1:],pdf)
         # plt.plot(bin_edges[1:],cdf)

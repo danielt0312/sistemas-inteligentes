@@ -57,7 +57,7 @@ class Window(QWidget):
         # Validar figura
         if figureCanvas:
             if self.figure:
-                self.figure.deleteLater()  # Eliminar el lienzo anterior si existe
+                self.figure.deleteLater()
             self.figure = figureCanvas
             self.gridFigure.addWidget(self.figure)
 
@@ -68,39 +68,30 @@ class Window(QWidget):
 
         # Validar el archivo proporcionado
         if (self.lector.isValid()):
-            # Mostrar figura
             self.lector.showEDA()
+            # Mostrar figura
             self.loadItems()
-        elif not (self.figure):
-            self.cbxColumns.addItem('Seleccione un archivo válido.')
-            self.cbxColumns.setEnabled(False)
-            return self.messageWarningPath(self.lector.getCause())
-        else:
-            return self.messageWarningPath(self.lector.getCause())
+            return
+        elif (self.figure):
+            self.figure.deleteLater()
+            self.figure = None
+        
+        self.cbxColumns.clear()
+        self.cbxColumns.addItem('Seleccione un archivo válido.')
+        self.cbxColumns.setEnabled(False)
+        print('*** Archivo invalido ***')
 
+        return self.messageWarning(self.lector.getCause())
         
     # Cargar columnas al cbxColumns
     def loadItems(self):
         # Eliminamos items previos cargados
         self.cbxColumns.clear()
 
-        # Validar columnas
-        rows, columns = self.lector.getColumns().shape
-        if (columns > 10 or columns == 0):
-            self.cbxColumns.addItem('No hay columnas válidas en el archivo proporcionado.')
-            if(columns == 0):
-                self.messageWarningPath('No se encuentra una longitud válida de filas o columnas.\nPorfavor, modifique o cambie de archivo.')
-            elif(columns > 10):
-                self.messageWarningPath('El limite máximo de columnas es de 10.\nPorfavor, modifique o cambie de archivo.')
-                
-            self.cbxColumns.setEnabled(False)
-            return
-
         # Ingresamos las columnas
         self.cbxColumns.setEnabled(True)
         for column_name in self.lector.getColumns():
             self.cbxColumns.addItem(column_name)
-        
         
     # Seleccionar archivo ARFF
     def getPath(self):
@@ -113,7 +104,7 @@ class Window(QWidget):
         )
     
     # Mostrar advertencia sobre el directorio invalido
-    def messageWarningPath(self, causa):
+    def messageWarning(self, causa):
         return QMessageBox.warning(
             self,
             "Advertencia",
