@@ -53,7 +53,7 @@ class Window(QWidget):
 
     # Cargar figura
     def loadFigure(self, column):
-        figureCanvas = self.lector.getFigure(self.lector.getColumns()[column])
+        figureCanvas = self.lector.getFigure(self.lector.getNumericColumns()[column])
 
         # Validar figura
         if figureCanvas:
@@ -91,7 +91,7 @@ class Window(QWidget):
 
         # Ingresamos las columnas
         self.cbxColumns.setEnabled(True)
-        for column_name in self.lector.getColumns():
+        for column_name in self.lector.getNumericColumns():
             self.cbxColumns.addItem(column_name)
         
     # Seleccionar archivo ARFF
@@ -110,6 +110,6 @@ class Window(QWidget):
             self,
             "Advertencia",
             causa,
-            buttons = QMessageBox.StandardButton.Discard,
-            defaultButton = QMessageBox.StandardButton.Discard,
+            buttons = QMessageBox.StandardButton.Close,
+            defaultButton = QMessageBox.StandardButton.Close,
         )

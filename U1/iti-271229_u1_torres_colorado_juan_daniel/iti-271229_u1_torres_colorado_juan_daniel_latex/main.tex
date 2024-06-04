@@ -1,0 +1,212 @@
+%%
+% La siguiente plantilla esta basada en el siguiente enlace:
+% http://academic.reed.edu/physics/courses/Physics332.s08/reports.html
+% La plantilla original puede descargarse de ese sitio
+% Se dejo parte del texto original en inglés para ilustar el uso de la plantilla
+% Se hicieron algunas modificaciones para ajustar el idioma y otros detalles para 
+% completar un reporte técnico breve pero muy puntual
+% Modificación Inicial: Marco Aurelio Nuno Maganda - 11/SEP/2014
+% 
+% Enlace a la documentación del tipo de documento base (revtex4)
+% http://mirror.hmc.edu/ctan/macros/latex/contrib/revtex/doc/latex/revtex/source/revtex4-1.pdf
+%
+% En algunas distribuciones es necesario instalar el paquete texlive-publishers
+%
+%\documentclass[letterpaper,aps,twocolumn,pre,nofootinbib]{revtex4}
+%\documentclass[twocolumn]{article}
+\documentclass[conference]{IEEEtran}
+
+\usepackage[spanish]{babel}
+\usepackage{amsmath,amssymb,amsfonts,amsthm}
+\usepackage{graphicx}
+%\usepackage{bbm}
+\usepackage[utf8]{inputenc} % Caracteres en Español (Acentos, ñs)
+\usepackage{url} % ACENTOS
+\usepackage{hyperref} % Referencias
+\usepackage{subfig}
+\usepackage{lipsum}
+\usepackage{balance}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% PARCHE PARA ELIMINAR LA FECHA DEL DOCUMENTO
+% 
+\usepackage{etoolbox}
+\makeatletter
+% \frontmatter@RRAP@format is responsible for the parentheses
+\patchcmd{\frontmatter@RRAP@format}{(}{}{}{}
+\patchcmd{\frontmatter@RRAP@format}{)}{}{}{}
+%\renewcommand\Dated@name{}
+\makeatother	
+% FIN DEL PARCHE
+% 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% PARCHE PARA PERMIRIR UTILIZAR BIBLATEX EN ESTA PANTLLA
+%\PassOptionsToPackage{square,numbers}{natbib}
+%\RequirePackage{natbib}  
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\usepackage[backend=bibtex,sorting=none]{biblatex}
+% Estas lineas permiten romper los hipervinculos muy largos !!!!
+\setcounter{biburllcpenalty}{7000}
+\setcounter{biburlucpenalty}{8000}
+\addbibresource{references.bib}
+
+% Actualiza en automático la fecha de las citas de internet a la fecha de la compilación del documento
+\usepackage{datetime}
+\newdateformat{specialdate}{\twodigit{\THEDAY}-\twodigit{\THEMONTH}-\THEYEAR}
+\date{\specialdate\today}
+
+% la sentencia \burl en las citas... 
+\usepackage[hyphenbreaks]{breakurl}
+
+\renewcommand\spanishtablename{Tabla}
+\renewcommand\spanishfigurename{Figura}
+
+%\usepackage{datetime}
+%\newdateformat{specialdate}{\twodigit{\THEDAY}-\twodigit{\THEMONTH}-\THEYEAR}
+%\newdateformat{specialdate}{\twodigit{\THEDAY}-\THEYEAR}
+%\date{\specialdate\today}
+
+
+\begin{document}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Definitions
+%
+%
+% Define your special symbols here
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% use to set width of figures
+\newcommand{\breite}{0.9} %  for twocolumn
+\newcommand{\RelacionFiguradoscolumnas}{0.9}
+\newcommand{\RelacionFiguradoscolumnasPuntoCinco}{0.45}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% End Definitions
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+%Title of paper
+\title{Reporte Individual de Unidad I \\ Visualizando la función de densidad de probabilidad (PDF) y de distribución acumulada (CDF)}
+
+% Trabajo Individual
+\author{\IEEEauthorblockN{Torres Colorado Juan Daniel\IEEEauthorrefmark{1}}
+% En caso de trabajos en equipo, poner a todos los autores en estricto ORDEN ALFABETICO
+%\author{\IEEEauthorblockN{Michael Shell\IEEEauthorrefmark{1},
+%Homer Simpson\IEEEauthorrefmark{1},
+%James Kirk\IEEEauthorrefmark{1}, 
+%Montgomery Scott\IEEEauthorrefmark{1} and
+%Eldon Tyrell\IEEEauthorrefmark{1}}
+\IEEEauthorblockA{\IEEEauthorrefmark{1}Ingeniería en Tecnologías de la Información\\
+Universidad Politécnica de Victoria}
+}
+
+
+%\date{}
+
+\maketitle
+
+\begin{abstract} 
+\textbf{} Este proyecto subraya la importancia de las funciones de distribución acumulada (CDF) y las funciones de densidad de probabilidad (PDF) en el análisis de datos y la probabilidad. El objetivo principal fue desarrollar una visualización interactiva de las CDF y PDF utilizando el lenguaje de programación Python. Se implementaron clases y funciones para la manipulación y representación gráfica de distribuciones de probabilidad. La visualización no solo facilita la comprensión de estos conceptos fundamentales, sino que también ofrece una herramienta educativa valiosa para estudiantes y profesionales interesados en la estadística y el análisis de datos.
+\end{abstract}
+
+%\maketitle must follow title, authors, abstract, \pacs, and \keywords
+
+\section{Introducción}
+El documento del proyecto presente fue asignado por el docente de la asignatura ''Sistemas Inteligentes'' y tuvo lugar a mediados de mayo del presente año. El propósito de este proyecto tiene como motivo principal comprender la función de densidad de probabilidad (PDF) y la función de distribución acumulada (CDF) \cite{Potter_2012} através de una interfaz visual desarrollado en el lenguaje de programación Python3 \cite{python3} a partir del análisis de datos de un archivo \textit{.ARFF} \cite{arff} proporcionado. 
+
+La \textbf{función de densidad de probabilidad} (PDF) es una función matemática que describe la probabilidad relativa de que una variable aleatoria continua tome un valor específico y representa cómo se distribuyen los valores de la variable a lo largo de sus posibles rangos. A pesar de no dar probabilidades exactas de valores específicos, resulta muy útil para la predicción de precipitaciones, el mercado de valores, la meteorología, etc.
+
+La \textbf{función de distribución acumulada} (CDF) es una función matemática que describe la probabilidad de que una variable aleatoria tenga valores menores o iguales a un valor dado específico. Es decir, es una función acumulativa porque suma la probabilidad total hasta ese punto y su resultado siempre se encuentra entre 0 y 1. 
+
+Un \textbf{Formato de Archivo de Atributo-Relación} (ARFF) es un archivo de texto ASCII que describe una lista de instancias que comparten un conjunto de atributos y se utiliza para el preprocesamiento de datos, el intercambio de datos, aprendizaje automático, etc.
+
+\section{Desarrollo Experimental}
+El desarrollo experimental que se llevó en este proyecto se basa principalmente de las fuentes atribuidas por el docente, en tales casos, con el uso de la librería PyQt6 \cite{pyqt6} para la creación de la interfaz interactiva, así como el uso de las librerías \textit{numpy}, \textit{pandas}, \textit{scipy} y \textit{matplotlib} \cite{harris2020array, pandas, 2020SciPy-NMeth, Hunter:2007} para la visualización y análisis de datos. Además, gracias a los conocimientos previstos en antiguos proyectos similares, se obtuvo un cierto grado de facilidad para el desarrollo de la interfaz interactiva del usuario.
+
+En primer lugar, para la comprensión de los conceptos de \textit{PDF} y \textit{CDF} no fue necesario el uso de investigación externa, esto debido a que en asignaturas pasadas se nos hizo de enseñanza estos conceptos matemáticos. Sin embargo, se llevó a cabo una investigación de un análisis acerca de la funcionalidad y uso de los archivos \textit{ARFF}, esto con el propósito de obtener una comprensión sobre la estructura de datos bidimensional (\textit{dataframe}) \cite{dataframe} con la que se pueda manipular para llevar a cabo el propósito de este proyecto.
+
+En el desarrollo de este proyecto se hizo necesario la creación de diversas clases (tales son: \textit{Window} y \textit{ArffLector}) que contaran con la capacidad de gestionar la visualización en pantalla sobre la representación del conjunto de datos proporcionado. La figura \ref{fig:DiagramadeClases} demuestra como se gestiona lo anterior dicho, en la cuál, el uso y la función de los diferentes métodos y variables serán explicados conforme los resultados se desarrollarán a continuación.
+
+\section{Resultados}
+Los resultados de este proyecto resultan en la visualización gráfica de la función de densidad de probabilidad (\textbf{PDF}) y la función de distribución acumulada (\textbf{CDF}) apartir del \textbf{dataframe} de un archivo \textbf{ARFF} proporcionado. En la figura \ref{fig:inicio} demuestra la ventana inicial contando con los elementos:
+
+\begin{itemize}
+    \item \textbf{Botón} ''Cargar Archivo'': Este botón tiene la funcionalidad de demostrar una ventana emergente con la capacidad de seleccionar un sólo archivo de formato \textit{.arff}.
+    \item \textbf{ComboBox}: Una vez proporcionado el archivo requerido, este tiene la funcionalidad de seleccionar a cuál de las columnas numéricas se quiere visualizar la figura correspondiente.
+\end{itemize}
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.9\linewidth]{images/inicio.png}
+    \caption{Ventana Inicial}
+    \label{fig:inicio}
+\end{figure}
+
+En la figura \ref{fig:select_file} se representa la ventana en la que, gracias a la clase \textit{QFileDialog} de la librería de \textit{PyQt6}, permite que la selección del archivo \textit{.arff} se proporcione de una manera más fácil y sencilla de obtener.
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.9\linewidth]{images/select_file.png}
+    \caption{Selección de Archivo}
+    \label{fig:select_file}
+\end{figure}
+
+Una vez que el archivo ha sido proporcionado correctamente, con el uso de la clase \textit{arff} de \textit{scipy.io} para cargar el archivo, la clase \textit{DataFrame} de \textit{pandas} para obtener la estructura de datos bidimensional, las funciones de \textit{numpy} para obtener las columnas numéricas del dataframe, crear el histograma \cite{histograma} y la \textit{CDF}, la clase \textit{FigureCanvasQTAgg} y \textit{Figure} de \textit{matplotlib} para la creación de la representación, se visualiza en la ventana principal la figura obtenida a partir de distintos procesos de validaciones este conjunto de datos. El resultado de lo anterior mencionado se aprecia en la figura \ref{fig:file_loaded}.
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.9\linewidth]{images/file_loaded.png}
+    \caption{Archivo y Figura cargada}
+    \label{fig:file_loaded}
+\end{figure}
+
+Si en el archivo proporcionado se cuenta con una o menos de diez columnas numéricas, entonces se puede seleccionar cuál de estas se quiere hacer la visualización de sus conjuntos de datos. En la figura \ref{fig:figure_selected_column} se demuestra este proceso.
+
+\begin{figure}
+\centering
+\subfloat[Selección de columna]{\includegraphics[width=0.8\linewidth]{images/select_column.png}}\\
+\subfloat[Representación de la selección de columna]{\includegraphics[width=0.8\linewidth]{images/selected_column.png}}\\
+\caption{Cambio de figura}
+\label{fig:figure_selected_column}
+\end{figure}
+
+En dado caso de que se decida cargar un nuevo archivo pero este resulte ser inválido o no fue seleccionado, entonces se mostrará un mensaje de advertencia indicando dicho error y la figura será eliminada en el caso de haber una ya previamente cargada. Esto se puede apreciar en la figura \ref{fig:warnings}.
+
+\begin{figure}
+\centering
+\subfloat[Selección de un archivo inválido]{\includegraphics[width=0.8\linewidth]{images/bad_file_selected.png}}\\
+\subfloat[Advertencia de archivo inválido]{\includegraphics[width=0.4\linewidth]{images/bad_file_selected_warning.png}} \hspace{0.25cm}
+\subfloat[Advertencia de archivo no seleccionado]{\includegraphics[width=0.4\linewidth]{images/no_file_selected_warning.png}}\\
+\subfloat[Figura no cargada]{\includegraphics[width=0.8\linewidth]{images/no_figure.png}}\\
+\caption{Selección errónea o De-selección de Archivo}
+\label{fig:warnings}
+\end{figure}
+
+\section{Conclusión}
+En este trabajo se desarrolló una interfaz visual en Python3 utilizando la librería PyQt6 para la visualización de funciones de densidad de probabilidad (PDF) y de distribución acumulada (CDF) a partir de datos proporcionados en archivos de formato ARFF. El proyecto tuvo como objetivo principal la comprensión y representación gráfica de estas funciones, facilitando el análisis de datos a través de una herramienta interactiva.
+
+Se hicieron uso de diversas librerías de Python como numpy, pandas, scipy y matplotlib para la manipulación y visualización de datos. Se diseñaron y programaron clases específicas como \textit{Window} y \textit{ArffLector} para gestionar la interfaz y el procesamiento de los datos mediante la carga de un archivo ARFF y la selección dinámica de columnas numéricas mostrando las gráficas correspondientes y presentarlos de una manera accesible y comprensible para cumplir con el objetivo del proyecto. Además, se implementaron funcionalidades para manejar archivos inválidos y proporcionar mensajes de advertencia al usuario cuando sean necesarias.
+
+Para finalizar, este proyecto proporcionó conocimiento de manera exitosa al alumno, además de proporcionar resultados satisfactorios para la visualización de las funciones matemáticas PDF y CDF.
+
+
+\addcontentsline{toc}{section}{Referencias} 
+\printbibliography
+%\balance
+
+\clearpage
+\begin{figure*}
+\section{Anexos}
+    \centering
+    \includegraphics[width=\RelacionFiguradoscolumnas \linewidth]{images/diagrama_uml.png}
+    \caption{Diagrama de clases}
+    \label{fig:DiagramadeClases}
+\end{figure*}
+
+\end{document}

@@ -1,9 +1,6 @@
 import pandas as pd
 import numpy as np
-# import matplotlib.pyplot as plt
 from scipy.io import arff
-
-# Generar figura
 from matplotlib.backends.backend_qtagg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.figure import Figure
 
@@ -23,7 +20,7 @@ class ArffLector():
     # Buscar causa en caso de haber un problema
     def findCause(self):
         if (self.dir != '' and self.dir != None and len(self.dir) != 0):
-            self.rows, self.columns = self.getColumns().shape
+            self.rows, self.columns = self.getNumericColumns().shape
 
         if (self.dir == '' or self.dir == None or len(self.dir) == 0):
             self.cause = 'El archivo no fue proporcionado.'
@@ -44,7 +41,7 @@ class ArffLector():
         return pd.DataFrame(arff_file[0])
     
     # Obtener solo columnas numericas
-    def getColumns(self):
+    def getNumericColumns(self):
         if self.df is None:
             self.df = self.getDataFrame()
         return self.df.select_dtypes(include=[np.number])
@@ -68,7 +65,7 @@ class ArffLector():
 
     # Mostrar figura del archivo cargado
     def getFigure(self, data):
-        counts,bin_edges = np.histogram(data, bins = 10, density = True)
+        counts, bin_edges = np.histogram(data, bins = 10, density = True)
         pdf = counts / (sum(counts))
 
         print('\npdf: ', pdf)
