@@ -1,13 +1,18 @@
 import os
 from PyQt6.QtWidgets import (QWidget, QPushButton, QFileDialog, QGridLayout, 
                              QMessageBox)
-from pdf_lector import *
+from pdf_filter import PDFLector
 
-# Clase para la interfaz visual y sus funciones
+"""
+Clase para la interfaz visual y sus funciones
+"""
 class Window(QWidget):
     # Constructor
     def __init__(self):
         super().__init__()
+
+        # Seguimiento de los archivos PDF
+        self.lector = PDFLector()
 
         # Crear ventana con elementos de la interfaz
         self.customUI()
@@ -40,11 +45,12 @@ class Window(QWidget):
     def loadFile(self):
         path = self.getDirPath()
         print('PATH:' + path)
-        self.lector = PDFLector(path)
+        self.lector.setDirPath(path)
 
         # Validar el archivo proporcionado
         if (self.lector.isValid()):
             print ('valido')
+            self.lector.createDirs()
             return
         
         print('*** Archivo invalido ***')
