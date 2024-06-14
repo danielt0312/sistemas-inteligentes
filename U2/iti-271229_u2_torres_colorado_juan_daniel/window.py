@@ -23,13 +23,18 @@ class Window(QWidget):
         content = QGridLayout()
         self.setLayout(content)
 
-        # Boton para seleccionar archivo
-        btnSelectFile = QPushButton('Seleccionar carpeta')
-        btnSelectFile.clicked.connect(self.loadFile)
+        # Boton para seleccionar directorio
+        btnSelectDir = QPushButton('Seleccionar carpeta')
+        btnSelectDir.clicked.connect(self.loadFile)
+
+        # Botón para clasificar
+        btnClassifier = QPushButton('Convertir archivos')
+        btnClassifier.clicked.connect(self.lector.convertFiles)
 
         # GridLayout para las acciones
         gridTools = QGridLayout()
-        gridTools.addWidget(btnSelectFile, 0, 0)
+        gridTools.addWidget(btnSelectDir, 0, 0)
+        gridTools.addWidget(btnClassifier, 1, 0)
 
         # GridLayout para la figura
         self.gridFigure = QGridLayout()
@@ -62,7 +67,7 @@ class Window(QWidget):
         return QFileDialog.getExistingDirectory(
             parent = self,
             caption = 'Selecciona el directorio',
-            directory = os.getcwd(),
+            directory = os.getcwd(),    # abrir en el directorio del programa
             options = QFileDialog.Option.ShowDirsOnly
         )
     
