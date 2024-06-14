@@ -1,5 +1,5 @@
 import os
-import pdftotext
+# import pdftotext
 
 """
 Clase para procesar los archivos PDF 
@@ -8,55 +8,67 @@ class PDFLector():
     # Constructor
     def __init__(self, dir_path = '.'):
         self.setDirPath(dir_path)
-        self.cause = 'No se ha encontrado algún problema'
+        self.causes = []
     
     # Actualizar Directorio
     def setDirPath(self, dir_path = '.'):
-        self.dir_path = dir_path
-        self.dir_docs = self.dir_path + '/documentos'
-        self.dir_train = self.dir_docs + '/train'
-        self.dir_docs_i = self.dir_docs + '/Inglés'
-        self.dir_docs_e = self.dir_docs + '/Español'
+        self.directories = [
+            dir_path,   # raiz
+            dir_path + '/documentos',
+            dir_path + '/documentos/filter',
+            dir_path + '/documentos/Inglés',
+            dir_path + '/documentos/Español',
+        ]
 
-    # Validación del archivo
+    # Validación de los directorios
     def isValid(self):
-        self.findCause()
-        return not (self.dir_path == '' or self.dir_path == None or len(self.dir_path) == 0)
+        return self.findCause()
 
     # Buscar causa en caso de haber un problema
     def findCause(self):
-        if (self.dir_path == '' or self.dir_path == None or len(self.dir_path) == 0):
-            self.cause = 'El directorio no fue proporcionado.'
-        elif (os.path.exists(self.dir_path)):
-            self.cause = 'El directorio ' + self.dir_path + 'no existe'
-        else:
-            self.cause = 'No se ha encontrado algún problema'
-            return True
-        return False
-
-    # Devolver causa
-    def getCause(self):
-        return self.cause
+        self.causes.clear()     # limpiar  si hay causas antiguas
+        
+        # Validar todos los directorios
+        for directory in self.directories:
+            if not (self.validDir(directory) and self.dirExists(directory)):
+                print (self.causes[-1])
+        
+        return len(self.causes) == 0    # válido si no hay causas    
     
-    # Crear directorios para filtrar el idioma
-    def createDirs(self):
-        directories = [self.dir_docs, self.dir_train, self.dir_docs_i, self.dir_docs_e]
-        for directory in directories:
-            try:
-                os.mkdir(directory)
-                print(f"Carpeta creada: {directory}")
-            except FileExistsError:
-                print(f"*** Omitido*** Carpeta en existencia: {directory}")
+    # Validar directorio proporcionado 
+    def validDir(self, directory):
+        if (directory == '' or directory == None or len(directory) == 0):
+            self.causes.append(f"El directorio '{directory}' no fue correctamente proporcionado.")
+            return False
+        return True
+    
+    # Validar si el directorio existe, sino, intentar crearlo y validar si se creó
+    def dirExists(self, directory):
+        return (os.path.exists(directory) or self.createDir(directory))
 
-    # Convertir el PDF a un archivo txt legible
-    def pdfToTxt(pdf_path, txt_path):
+    # Crear directorios
+    def createDir(self, directory):
         try:
-            with open(pdf_path, "rb") as f:
-                pdf_file = pdftotext.PDF(f)
+            os.mkdir(directory)
+            print(f"Directorio creado: '{directory}'")
+        except OSError as ex:
+            self.causes.append(f"El directorio '{directory}' no se pudo crear. ERROR: {ex}")
+            return False
+        return True
+
+    # # Convertir el PDF a un archivo txt legible
+    # def pdfToTxt(pdf_path, txt_path):
+    #     try:
+    #         with open(pdf_path, "rb") as f:
+    #             pdf_file = pdftotext.PDF(f)
             
-            with open(txt_path, "w", encoding='utf-8') as txt_file:
-                txt_file.write("\n\n".join(pdf_file))
+    #         with open(txt_path, "w", encoding='utf-8') as txt_file:
+    #             txt_file.write("\n\n".join(pdf_file))
             
-            print(f"Archivo PDF convertido a TXT: {txt_path}")
-        except Exception as e:
-            print(f"Error al convertir PDF a TXT: {e}")
+    #         print(f"Archivo PDF convertido a TXT: {txt_path}")
+    #     except Exception as e:
+    #         print(f"Error al convertir PDF a TXT: {e}")
+    
+    # Devolver causas
+    def getCauses(self):
+        return self.causes

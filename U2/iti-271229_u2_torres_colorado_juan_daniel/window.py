@@ -49,12 +49,13 @@ class Window(QWidget):
 
         # Validar el archivo proporcionado
         if (self.lector.isValid()):
-            print ('valido')
-            self.lector.createDirs()
-            return
+            print ('***VALIDO ***')
+        else:
+            print ('*** INVALIDO ***')
+            # for cause in self.lector.getCauses():
+            #     print (cause)
+                # self.messageError(cause)
         
-        print('*** Archivo invalido ***')
-        self.messageError(self.lector.getCause())
 
     # Proporcionar la direccion de la carpeta
     def getDirPath(self):
