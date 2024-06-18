@@ -83,7 +83,7 @@ class PDFLector():
             print('Iniciando clasificacion')
             cf = Classifier(dir_train, self.listFiles(dir_train))
             for f in self.listFiles(self.directories[2]):
-                cf.classify(self.directories[2]+'/'+f)
+                cf.classify(self.directories[2]+'/'+f, f)
             print('Clasificación terminada')
             
         else:
