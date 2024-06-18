@@ -1,5 +1,6 @@
 import os
 import subprocess
+from classifier import Classifier
 
 """
 Clase para procesar los archivos PDF 
@@ -10,7 +11,7 @@ class PDFLector():
         self.setDirPath(dir_path)
         self.causes = []
         self.pdf_files = []
-    
+
     # Actualizar Directorio
     def setDirPath(self, dir_path = '.'):
         self.directories = [
@@ -19,6 +20,7 @@ class PDFLector():
             dir_path + '/documentos/txt',
             dir_path + '/documentos/Inglés',
             dir_path + '/documentos/Español',
+            './train'   # carpeta para entrenar el clasificador
         ]
 
     # Validación de los directorios
@@ -29,8 +31,15 @@ class PDFLector():
     def findCause(self):
         self.causes.clear()     # limpiar  si hay causas antiguas
         
-        return self.validFiles() and self.validDirectories()
+        return self.validTrain() and self.validFiles() and self.validDirectories()
     
+    # Validar directorio para poder entrenar el clasificador
+    def validTrain(self):
+        if not self.pathExists(self.directories[5]):
+            self.causes.append("No existe el directorio 'train' en el programa")
+            return False
+        return True
+
     # Validar cantidad mínima de PDFs en el directorio raíz
     def validFiles(self):
         if (self.validDir(self.directories[0])):
@@ -65,6 +74,20 @@ class PDFLector():
     # Validar si una dirección existe
     def pathExists(self, directory):
         return os.path.exists(directory)
+
+    # Clasificar los documentos
+    def classify(self):
+        if (self.isValid()):
+            dir_train = self.directories[5] + '/'
+
+            print('Iniciando clasificacion')
+            cf = Classifier(dir_train, self.listFiles(dir_train))
+            for f in self.listFiles(self.directories[2]):
+                cf.classify(self.directories[2]+'/'+f)
+            print('Clasificación terminada')
+            
+        else:
+            print(self.causes[0])
 
     # Crear directorio
     def createDir(self, directory):

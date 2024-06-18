@@ -27,14 +27,19 @@ class Window(QWidget):
         btnSelectDir = QPushButton('Seleccionar carpeta')
         btnSelectDir.clicked.connect(self.loadFile)
 
+        # Botón para convertir archivos
+        btnConvertFiles = QPushButton('Convertir archivos')
+        btnConvertFiles.clicked.connect(self.lector.convertFiles)
+
         # Botón para clasificar
-        btnClassifier = QPushButton('Convertir archivos')
-        btnClassifier.clicked.connect(self.lector.convertFiles)
+        btnClassifier = QPushButton('Clasificar documentos')
+        btnClassifier.clicked.connect(self.lector.classify)
 
         # GridLayout para las acciones
         gridTools = QGridLayout()
         gridTools.addWidget(btnSelectDir, 0, 0)
-        gridTools.addWidget(btnClassifier, 1, 0)
+        gridTools.addWidget(btnConvertFiles, 1, 0)
+        gridTools.addWidget(btnClassifier, 2, 0)
 
         # GridLayout para la figura
         self.gridFigure = QGridLayout()

@@ -14,14 +14,12 @@ def text2paragraphs(filename, min_size=1):
     paragraphs = [para for para in txt.split("\n\n") if len(para) > min_size]
     return paragraphs
 
-path = "txt/"
+path = "train/"
 
 files = os.listdir(path)
-print(files)
 labels = {fname[:2] for fname in files if fname.endswith(".txt")}
 labels = sorted(list(labels))
 print(labels)
-
 
 data = []
 targets = []
@@ -62,13 +60,14 @@ print("accuracy score: ", accuracy_score)
 print("F1-score: ", f1_score)
 
 
-some_texts = ["Hola amigos como estamos ayer y a los lunes jueves hola",
-              "some snuffy old stockbroker who's gone on adding up column after column",
-              "all his days, and trotting back to his villa at Brixton with some old",
-              "pug dog he worships, and a dreary little wife sitting at the end of the",
-              "Hola amigos como estamos ayer y a los lunes jueves hola"]
+path = "/home/daniel/Descargas/test/documentos/txt/"
+files = os.listdir(path)
+# print(files)
+for fname in files:
+    # some_text = read_file_content(path+fname)
+    some_text = text2paragraphs(path + fname, min_size=150)
+    vtest = vectorizer.transform(some_text)
 
-vtest = vectorizer.transform(some_texts)
-predictions = classifier.predict(vtest)
-for label in predictions:
-    print(label, labels[label])
+    # Predict the language of the entire text
+    prediction = classifier.predict(vtest)[0]
+    print(f"El archivo '{fname}' está en:", labels[prediction])
