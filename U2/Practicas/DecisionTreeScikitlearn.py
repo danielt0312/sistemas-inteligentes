@@ -2,7 +2,7 @@ from sklearn.ensemble import RandomForestClassifier
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.model_selection import cross_validate
 from sklearn.neighbors import KNeighborsClassifier
-from sklearn.naive_bayes import GaussianNB
+from sklearn.naive_bayes import GaussianNB, MultinomialNB
 from sklearn.neural_network import MLPClassifier
 from sklearn.ensemble import AdaBoostClassifier
 from sklearn import datasets
@@ -18,6 +18,7 @@ print ('Muestras en el Datasets', len(X))
 Clasificadores = [
     RandomForestClassifier(n_estimators=100,criterion="entropy"),
     DecisionTreeClassifier(criterion = 'entropy'),
+    MultinomialNB(alpha=.01),
     GaussianNB(),
     KNeighborsClassifier(),
     AdaBoostClassifier(n_estimators=400,learning_rate=1,algorithm='SAMME'),
