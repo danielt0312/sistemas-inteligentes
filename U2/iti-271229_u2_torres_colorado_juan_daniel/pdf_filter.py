@@ -1,5 +1,5 @@
 import os
-import subprocess
+import subprocess # para usar pdftotext de poppler, sudo apt-get install poppler-utils
 import shutil
 from classifier import Classifier
 

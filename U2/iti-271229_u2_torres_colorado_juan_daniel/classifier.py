@@ -1,4 +1,3 @@
-import os
 from sklearn.model_selection import train_test_split, GridSearchCV
 from sklearn.feature_extraction.text import TfidfVectorizer, ENGLISH_STOP_WORDS
 from sklearn.naive_bayes import MultinomialNB
