@@ -1,17 +1,21 @@
 import os
 import subprocess # para usar pdftotext de poppler, sudo apt-get install poppler-utils
 import shutil
+from PyQt6.QtCore import QObject, pyqtSignal
 from classifier import Classifier
 
 """
 Clase para procesar los archivos PDF 
 """
-class PDFLector():
+class PDFLector(QObject):
+    errorSignal = pyqtSignal(str)  # Señal que emite una cadena (mensaje de error)
+
     # Constructor
     def __init__(self, dir_path = '.'):
-        self.setDirPath(dir_path)
+        super().__init__()
         self.causes = []
-        self.pdf_files = []
+        self.pdf_files = []    
+        self.setDirPath(dir_path)
 
     # Actualizar Directorio
     def setDirPath(self, dir_path = '.'):
@@ -23,28 +27,29 @@ class PDFLector():
             dir_path + '/documentos/Español',
             './train'   # carpeta para entrenar el clasificador
         ]
-
-    # Validación de los directorios
-    def isValid(self):
-        return self.findCause()
+        self.isValid()
 
     # Buscar causa en caso de haber un problema
-    def findCause(self):
-        self.causes.clear()     # limpiar  si hay causas antiguas
+    def isValid(self):
+        self.causes.clear()     # limpiar si hay causas antiguas
         
-        return self.validTrain() and self.validFiles() and self.validDirectories()
+        if not (self.validFiles() and self.validDirectories()):
+            self.emitErrorSignal()
+            return False
+        return True
     
     # Validar directorio para poder entrenar el clasificador
     def validTrain(self):
-        if not self.pathExists(self.directories[5]):
-            self.causes.append("No existe el directorio 'train' en el programa")
+        if len(self.filtFiles(self.listFiles(self.directories[2]+'/'), '.txt')) == 0:
+            self.causes.append(f"No se encontraron archivos de texto en el directorio '{self.directories[2]}'")
+            self.emitErrorSignal()
             return False
         return True
 
     # Validar cantidad mínima de PDFs en el directorio raíz
     def validFiles(self):
         if (self.validDir(self.directories[0])):
-            files = self.listFiles(self.directories[0])
+            files = self.listFiles(self.directories[0]+'/')
             self.pdf_files = self.getNameFiles(self.filtFiles(files, '.pdf'))
 
             if len(self.pdf_files) == 0:
@@ -57,7 +62,6 @@ class PDFLector():
     def validDirectories(self):
         for directory in self.directories[1:]:
             if not (self.validDir(directory) and self.dirExists(directory)):
-                print (self.causes[-1])
                 return False
         return True
     
@@ -78,7 +82,7 @@ class PDFLector():
 
     # Clasificar todos los archivos PDFs de la carpeta proporcionada
     def classifyFiles(self):
-        if (self.isValid()):
+        if (self.isValid() and self.validTrain()):
             dir_train = self.directories[5] + '/'
 
             self.files_en = []
@@ -92,8 +96,6 @@ class PDFLector():
 
             self.moveFiles(self.directories[0], self.directories[3], self.getNameFiles(self.files_en))
             self.moveFiles(self.directories[0], self.directories[4], self.getNameFiles(self.files_es))
-        else:
-            print(self.causes[-1])
     
     # Clasificar un archivo si está en inglés o español
     def classifyFile(self, dir_path, f):
@@ -125,12 +127,11 @@ class PDFLector():
     # Convertir archivos
     def convertFiles(self):
         if (self.isValid()):
+            print('Iniciando conversión de archivos PDF a TXT, esto puede llevar tiempo...')
             for name in self.pdf_files:
                 if (not self.pdfToTxt(self.directories[0] + '/' + name + '.pdf', self.directories[2] + '/' + name + '.txt', name)):
                     print(self.causes[-1])
             print('Conversión terminada.')
-        else:
-            print(self.causes[-1])
     
     # Conversión de PDF a TXT
     def pdfToTxt(self, pdf_path, txt_path, fname):
@@ -142,10 +143,11 @@ class PDFLector():
             return False
         return True
     
-    # Devolver los nombres de archivos PDFs
-    def getPDFFilesName(self, files):
-        return 
-    
+    # Mostrar mensajes de adevertencias y/o errores
+    def emitErrorSignal(self):
+        error_message = "\n".join(self.causes)  # Unir todas las causas en un mensaje de error
+        self.errorSignal.emit(error_message)    # Emitir la señal con el mensaje de error
+
     # Listar los archivos de un directorio 
     def listFiles(self, directory):
         return os.listdir(directory)
@@ -155,7 +157,7 @@ class PDFLector():
         return [fname for fname in files if fname.endswith(extension)]
     
     # Devolver los nombres de los archivos
-    def     getNameFiles(self, files):
+    def getNameFiles(self, files):
         return [os.path.splitext(fname)[0] for fname in files]
 
     # Devolver causas
