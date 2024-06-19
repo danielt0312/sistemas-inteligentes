@@ -1,3 +1,5 @@
+from __future__ import print_function
+
 import numpy as np
 import pandas as pd
 import nltk     # instalar: pip install nltk
@@ -12,6 +14,14 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 from sklearn.cluster import KMeans
 import joblib
+import os  # for os.path.basename
+
+import matplotlib.pyplot as plt
+import matplotlib as mpl
+
+from sklearn.manifold import MDS
+
+from scipy.cluster.hierarchy import ward, dendrogram
 
 
 """
@@ -31,6 +41,7 @@ synopses.append("Dorothy Gale is swept away from her Kansas farm to the magical 
 synopses.append("A young aristocrat falls in love with a kind but poor artist aboard the ill-fated R.M.S. Titanic. Their romance is put to the test as the ship meets its tragic end.")
 
 ranks = list(range(len(titles)))
+genres = ['Crime', 'Drama', 'History', 'Sports', 'Romance', 'Drama', 'History', 'Drama', 'Fantasy', 'Romance']
 
 ### Init
 
@@ -136,3 +147,126 @@ print(clusters)
 films = { 'title': titles, 'rank': ranks, 'synopsis': synopses, 'cluster': clusters, 'genre': genres }
 
 frame = pd.DataFrame(films, index = [clusters] , columns = ['rank', 'title', 'cluster', 'genre'])
+
+print(frame)
+
+grouped = frame['rank'].groupby(frame['cluster']) #groupby cluster for aggregation purposes
+
+print(grouped.mean()) #average rank (1 to 100) per cluster
+
+
+print("Top terms per cluster:")
+print()
+#sort cluster centers by proximity to centroid
+order_centroids = km.cluster_centers_.argsort()[:, ::-1] 
+
+for i in range(num_clusters):
+    print("Cluster %d words:" % i, end='')
+    
+    for ind in order_centroids[i, :6]: #replace 6 with n words per cluster
+        print(' %s' % vocab_frame.loc[terms[ind].split(' ')].values.tolist()[0][0].encode('utf-8', 'ignore'), end=',')
+    print() #add whitespace
+    print() #add whitespace
+    
+    print("Cluster %d titles:" % i, end='')
+    for title in frame.loc[i]['title'].values.tolist():
+        print(' %s,' % title, end='')
+    print() #add whitespace
+    print() #add whitespace
+
+
+"""
+Multidimensional scaling
+"""
+
+MDS()
+
+# convert two components as we're plotting points in a two-dimensional plane
+# "precomputed" because we provide a distance matrix
+# we will also specify `random_state` so the plot is reproducible.
+mds = MDS(n_components=2, dissimilarity="precomputed", random_state=1)
+
+pos = mds.fit_transform(dist)  # shape (n_components, n_samples)
+
+xs, ys = pos[:, 0], pos[:, 1]
+print()
+
+"""
+Visualizing document clusters
+"""
+
+#set up colors per clusters using a dict
+cluster_colors = {0: '#1b9e77', 1: '#d95f02', 2: '#7570b3', 3: '#e7298a', 4: '#66a61e'}
+
+#set up cluster names using a dict
+cluster_names = {0: 'Love, fall, american', 
+                 1: 'World, war, during', 
+                 2: 'New, meet, world', 
+                 3: 'Life, relationships, american', 
+                 4: 'Family, american, relationships'}
+
+#create data frame that has the result of the MDS plus the cluster numbers and titles
+df = pd.DataFrame(dict(x=xs, y=ys, label=clusters, title=titles)) 
+
+#group by cluster
+groups = df.groupby('label')
+
+
+# set up plot
+fig, ax = plt.subplots(figsize=(17, 9)) # set size
+ax.margins(0.05) # Optional, just adds 5% padding to the autoscaling
+
+#iterate through groups to layer the plot
+#note that I use the cluster_name and cluster_color dicts with the 'name' lookup to return the appropriate color/label
+for name, group in groups:
+    ax.plot(group.x, group.y, marker='o', linestyle='', ms=12, 
+            label=cluster_names[name], color=cluster_colors[name], 
+            mec='none')
+    ax.set_aspect('auto')
+    ax.tick_params(\
+        axis= 'x',          # changes apply to the x-axis
+        which='both',      # both major and minor ticks are affected
+        bottom='off',      # ticks along the bottom edge are off
+        top='off',         # ticks along the top edge are off
+        labelbottom='off')
+    ax.tick_params(\
+        axis= 'y',         # changes apply to the y-axis
+        which='both',      # both major and minor ticks are affected
+        left='off',      # ticks along the bottom edge are off
+        top='off',         # ticks along the top edge are off
+        labelleft='off')
+    
+ax.legend(numpoints=1)  #show legend with only 1 point
+
+#add label in x,y position with the label as the film title
+for i in range(len(df)):
+    ax.text(df.loc[i]['x'], df.loc[i]['y'], df.loc[i]['title'], size=8)  
+
+
+plt.show() #show the plot
+
+#uncomment the below to save the plot if need be
+# plt.savefig('clusters_small_noaxes.png', dpi=200)
+
+"""
+Hierarchical document clustering
+"""
+
+
+linkage_matrix = ward(dist) #define the linkage_matrix using ward clustering pre-computed distances
+
+fig, ax = plt.subplots(figsize=(15, 20)) # set size
+ax = dendrogram(linkage_matrix, orientation="left", labels=titles);
+
+plt.tick_params(\
+    axis= 'x',          # changes apply to the x-axis
+    which='both',      # both major and minor ticks are affected
+    bottom='off',      # ticks along the bottom edge are off
+    top='off',         # ticks along the top edge are off
+    labelbottom='off')
+
+plt.tight_layout() #show plot with tight layout
+plt.show()
+
+#uncomment below to save figure
+# plt.savefig('ward_clusters.png', dpi=200) #save figure as ward_clusters
