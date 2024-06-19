@@ -1,6 +1,7 @@
 import os
 from PyQt6.QtWidgets import (QWidget, QPushButton, QFileDialog, QGridLayout, 
                              QMessageBox)
+from PyQt6.QtCore import pyqtSlot
 from pdf_filter import PDFLector
 
 """
@@ -13,6 +14,9 @@ class Window(QWidget):
 
         # Seguimiento de los archivos PDF
         self.lector = PDFLector()
+
+        # Conectar señales provinientes del filtro
+        self.lector.errorSignal.connect(self.messageError)
 
         # Crear ventana con elementos de la interfaz
         self.customUI()
@@ -33,7 +37,7 @@ class Window(QWidget):
 
         # Botón para clasificar
         btnClassifier = QPushButton('Clasificar documentos')
-        btnClassifier.clicked.connect(self.lector.classify)
+        btnClassifier.clicked.connect(self.lector.classifyFiles)
 
         # GridLayout para las acciones
         gridTools = QGridLayout()
@@ -48,24 +52,13 @@ class Window(QWidget):
         content.addLayout(gridTools, 0, 0, 1, 4)
 
         # Estilo de la ventana
-        self.resize(1920,1080)
+        self.resize(720,540)
         self.setWindowTitle('Filtrar documentos en Inglés y Español')
 
     # Leer archivo ARFF
     def loadFile(self):
         path = self.getDirPath()
-        print('PATH:' + path)
         self.lector.setDirPath(path)
-
-        # Validar el archivo proporcionado
-        if (self.lector.isValid()):
-            print ('***VALIDO ***')
-        else:
-            print ('*** INVALIDO ***')
-            # for cause in self.lector.getCauses():
-            #     print (cause)
-                # self.messageError(cause)
-        
 
     # Proporcionar la direccion de la carpeta
     def getDirPath(self):
@@ -76,7 +69,8 @@ class Window(QWidget):
             options = QFileDialog.Option.ShowDirsOnly
         )
     
-    # Mostrar advertencia sobre el directorio invalido
+    @pyqtSlot(str)
+    # Mostrar advertencias o errores que se generan en el programa
     def messageError(self, causa):
         return QMessageBox.warning(
             self,
