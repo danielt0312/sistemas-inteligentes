@@ -1,0 +1,544 @@
+Revista Ibérica de Sistemas e Tecnologias de Informação
+Iberian Journal of Information Systems and Technologies
+
+Recebido/Submission: 22/10/2018
+Aceitação/Acceptance: 06/12/2018
+
+Plataforma y aplicación móvil para proporcionar
+información del transporte público utilizando un
+dispositivo embebido de bajo costo
+Jorge Buele1, Franklin Salazar L.1, Santiago Altamirano1, Abigail Aldás R.1,
+Pilar Urrutia-Urrutia 1
+jl.buele@uta.edu.ec, fw.salazar@uta.edu.ec, santiagomaltamirano@uta.edu.ec, naldas3666@
+uta.edu.ec, elsapurrutia@uta.edu.ec
+Facultad de Ingeniería en Sistemas, Electrónica e Industrial, Universidad Técnica de Ambato, 180103,
+Ambato, Ecuador
+1
+
+Pages: 476–489
+
+Resumen: En este proyecto se presenta el desarrollo de un sistema informativo de
+transporte público urbano, para mejorar la movilidad de los usuarios. Este sistema
+consta de una pantalla informativa ubicada en la parada, por donde un bus realiza
+su recorrido. Adiciona la reproducción de mensajes auditivos, que promueven la
+inclusión de personas con discapacidad visual y la población analfabeta. Para una
+mayor interacción con los pasajeros se ha implementado una plataforma donde se
+puede apreciar la ruta a seguir, horarios, clima y el tiempo pronosticado hasta que
+otra unidad de transporte llegue a dicho lugar. Además de una aplicación intuitiva
+compatible con teléfonos inteligentes que utilicen sistema operativo Android. Para el
+procesamiento de los datos se ha utilizado la tarjeta embebida Raspberry Pi 3 como
+unidad central del sistema. Paralelamente se ha incorporado un servidor web, que
+permite el procesamiento de información y su almacenamiento en una base de datos.
+Palabras-clave: Aplicaciones móviles; Transporte público; Servidores; Bases de datos.
+
+Platform and mobile application to provide information on public
+transport using a low-cost embedded device
+Abstract: This work presents the development of an urban public transport
+information system, to improve user mobility. The system contains an informative
+screen located in the stops where a bus makes its journey. It adds auditory
+messages, which promote the people inclusion with visual disabilities and the
+illiterate population. For greater interaction with passengers, a platform has been
+implemented where you can see the route to follow, timetables, weather and the
+predicted time until another bus unit reaches that stop. In addition, an intuitive
+application compatible with Android smartphones has been presented. For data
+processing, the Raspberry Pi 3 embedded board has been used as the central unit of
+the system. At the same time, a web server has been incorporated, which allows the
+processing of information and its storage in a database.
+Keywords: Mobile applications; Public transportation; Servers; databases.
+476
+
+RISTI, N.º E17, 01/2019
+
+RISTI - Revista Ibérica de Sistemas e Tecnologias de Informação
+
+1.
+
+Introducción
+
+La acelerada evolución de los sistemas de comunicación, ha permitido que el
+conocimiento se difunda de una forma más rápida y eficiente (Johnson, Lukaszewski
+& Stone, 2016). Esta realidad ha contribuido a que la información se desplace a nivel
+global, en un menor periodo de tiempo y sin limitaciones (Shakir, Hammood & Muttar,
+2018). Las principales herramientas utilizadas para este fin son el internet y los servicios
+web, que permiten realizar consultas sobre el clima, ubicación en tiempo real, sitios
+turísticos, alimentación, centros médicos, entre otros (Arciniegas Aguirre, y otros,
+2018). Todo ello desde la comodidad de un ordenador personal o desde un teléfono
+inteligente que presente las prestaciones necesarias de conectividad. La inmersión de
+estos dispositivos ha llegado a representar una verdadera revolución a nivel mundial en
+las últimas décadas, donde su producción en masa ha crecido exponencialmente (Silva,
+Toasa, Guevara, Martinez, & Vargas, 2018). De forma paralela el desarrollo de interfaces
+y aplicaciones se ha convertido en una nueva tendencia comercial sin discriminación.
+De esta forma el ser humano se encuentra interconectado con el medio que lo rodea.
+Lo cual le ha permitido mejorar su calidad de vida y para ello se han implementado
+sistemas que involucran a las Tecnologías de la Información y la Comunicación (TIC) e
+Internet de las Cosas (IoT por sus siglas en inglés) (Harris, 2017). Un claro ejemplo es
+su aplicación en los entornos urbanos, permitiéndoles convertirse en las denominadas
+“ciudades inteligentes”. Dentro de ello, se debe recalcar que la gestión del transporte
+público se ha convertido en un aspecto de primer orden, ya que es utilizado por la
+mayoría de los ciudadanos cotidianamente (Abdelsalam, y otros, 2018). De su correcto
+manejo y organización depende el crecimiento político, demográfico, económico y social
+de la región local. Por ejemplo, con la implementación de los contadores de pasajeros
+en los buses de transporte urbano, se puede obtener estadísticas del uso diario de este
+servicio. Así, los organismos responsables y las agencias de tránsito locales pueden
+tomar mejores decisiones, que optimicen el servicio que se le presta al usuario y permite
+la inclusión de personas con diversas discapacidades (Guo, Derian & Zhao, 2015).
+Este trabajo basado en las investigaciones descritas en el capítulo posterior, propone
+el desarrollo de interfaces informativas para mejorar el servicio del transporte público
+urbano. Este sistema se implementa utilizando tecnología de bajo costo, que permite
+mantener a los usuarios informados sobre las prestaciones que se les brinda y la inclusión
+de personas con capacidades diferentes. Como unidad de procesamiento central se utiliza
+Raspberry Pi 3 y para el procesamiento y almacenamiento de información un servidor
+web cargado en la misma tarjeta. Para validar este prototipo, se realizan las respectivas
+pruebas experimentales utilizando 2 buses y 3 parada. Al realizarlas con línea de vista
+directa o sin ella, se observa una respuesta eficiente como se muestra en la sección de
+resultados.
+Por tanto, este artículo se organiza de la siguiente manera: la introducción en la sección
+1, en la sección 2 se muestra el estado del arte de investigaciones relacionadas. En la
+sección 3 se presenta la descripción del sistema y los elementos que forman parte del
+mismo. Los resultados de las pruebas experimentales realizadas y las conclusiones se
+describen en las secciones 4 y 5 respectivamente.
+
+RISTI, N.º E17, 01/2019
+
+477
+
+Plataforma y aplicación móvil para proporcionar información del transporte público
+
+2. Estado del arte
+Innovar los sistemas de transporte público, es una labor que requiere una fuerte inversión
+económica y un estudio que pueda demostrar la factibilidad de su implementación. Por
+lo cual se han desarrollado algunas investigaciones que han tratado esta temática como
+se presenta a continuación. Para poder ofrecer un mejor servicio es necesario entender el
+comportamiento humano e identificar patrones sobre su movilización, como se analiza
+en el trabajo de (Siła-Nowicka, y otros, 2016). El resultado de este estudio es un conjunto
+de datos enriquecido contextualmente, que admite nuevas posibilidades para modelar el
+comportamiento del movimiento humano. En (Mazloumi, Currie & Rose, 2010) por su
+parte se analiza la variabilidad del tiempo de viaje del transporte público, mediante el uso
+de datos obtenidos con un dispositivo GPS (Global Positioning System en inglés). Esta
+propuesta se implementa en una ruta de autobús en Melbourne, en distintos momentos
+del día, variaciones del tráfico y otros factores que contribuyen a la investigación. Con
+la intención de identificar las causas por las cuales existe congestión vehicular en las
+urbes en (Stoll, 2016) se realiza el monitoreo de un autobús. Se ha creado un conjunto
+de herramientas para ayudar a visualizar las tendencias en el comportamiento y el
+movimiento mientras realiza su recorrido. Este tipo de información es importante para
+las autoridades de tránsito que buscan mejorar los tiempos de funcionamiento del
+transporte público y para la investigación que se está realizando. De manera similar en
+(Bie, Gong & Liu, 2015) se presenta un algoritmo basado en datos tomados con un GPS,
+para dividir las horas de operación de un bus en intervalos de tiempo durante un día.
+Este método consta de tres pasos y se prueba en una ruta en Suzhou, China para validar
+lo propuesto.
+A través del desarrollo tecnológico se han implementado nuevas herramientas para
+realizar el monitoreo de las unidades de transporte. En (Lee, Tewolde & Know, 2014)
+se desarrolla un sistema económico para el seguimiento y rastreo de vehículos desde
+cualquier ubicación y en cualquier momento. Para ello se combina el uso de un dispositivo
+GPS con la tecnología GSM/GPRS, que es una de las formas más comunes para el
+seguimiento vehicular. Para la visualización de la información se presenta una aplicación
+para teléfonos inteligentes, que recibe la información desde un microcontrolador. De
+manera similar en (Megalingam, y otros, 2014), utilizando módulos GPS y GSM se
+establece comunicación entre la unidad móvil de trasporte y la parada. De esta manera
+se muestra un tiempo estimado del arribo del bus a la próxima estación y se presenta
+la información mediante una pantalla y una aplicación en su smartphone. Un sistema
+de información para el trasporte público utilizando GPS, el protocolo TCP/IP y otros
+servicios web se presenta en (Sungur, Babaoglu & Sungur, 2015). Mediante monitores
+en el interior de la unidad móvil y en las paradas, se puede conocer su ubicación en
+tiempo real. En (Handte, Foell, Wagner, Kortuem & Marrón, 2016) utilizando el sistema
+de posicionamiento global, los pasajeros pueden ver la ruta trazada desde el interior del
+bus. Como complemento se presenta una serie de recomendaciones sobre rutas alternas,
+dependiendo de los niveles de multitud que esperan un próximo abordaje.
+3.
+
+Descripción de la propuesta
+
+En este contexto, los estudios y algoritmos realizados están orientados a la formación de
+un sistema informativo, que mejore la movilidad de los usuarios al utilizar el transporte
+478
+
+RISTI, N.º E17, 01/2019
+
+RISTI - Revista Ibérica de Sistemas e Tecnologias de Informação
+
+público. En la Figura 1 se muestra un esquema general del sistema y los elementos que
+forman parte del mismo.
+
+Figura 1 – Esquema general del sistema propuesto
+
+3.1. Servidor web
+Para iniciar el desarrollo de los algoritmos de programación, se instala el sistema operativo
+Raspbian en la tarjeta embebida Raspberry Pi 3. A continuación, se describe el proceso
+de instalación del servidor; que inicia con la actualización de librerías y repositorio,
+para evitar inconvenientes al momento de configurar y conectar periféricos. De esta
+manera, la instalación del servidor Apache puede empezar al introducir el comando de
+programación correspondiente. El directorio donde se guardan los archivos o páginas
+que se muestran en el servidor web de Raspbian es: /var/www/html. Aquí index.html
+es la página que aparece por defecto. Se instala el lenguaje de código abierto PHP por
+sus prestaciones en el desarrollo de aplicaciones web y se crea el fichero info.php en el
+directorio de la página web. Al abrir el navegador en la dirección donde se creó el fichero
+se verifica la correcta instalación de PHP en el servidor. Para el almacenamiento de la
+información se instala una base de datos MySQL. Se configura una nueva contraseña
+para el usuario root, que será utilizada para la autenticación de identidad. Se inicia el
+servicio y se comprueba su funcionamiento con los comandos respectivos.
+Para la administración de la base de datos, se selecciona el servidor web que será
+utilizado y se genera una contraseña mediante phpMyAdmin. Se modifica el fichero
+de configuración de Apache “apache2.conf”, se guardan los cambios y se reinicia el
+servicio. Utilizando FTP se puede compartir archivos desde cualquier computadora que
+tenga los permisos y el acceso para el uso de este servicio, hacia el servidor web que
+se ha creado. Para permitir la escritura en el servidor es necesario modificar el fichero
+de configuración de FTP, así como el reinicio del servicio para actualizar los cambios
+efectuados. Finalmente, para la creación y administración del sitio web se utiliza
+WordPress. Esta herramienta necesita una base de datos para el almacenamiento de su
+información, por lo cual se procede a crearla, se configura el sitio y contraseña.
+RISTI, N.º E17, 01/2019
+
+479
+
+Plataforma y aplicación móvil para proporcionar información del transporte público
+
+Funcionamiento
+Los datos adquiridos son enviados a la base de datos (BD), procesados por el servidor
+y presentados a los usuarios finales. De esta manera se pueden efectuar consultas
+desde una computadora o un smartphone, como se muestra en la Figura 2. Para probar
+esta propuesta se han definido dos rutas de transporte público en un entorno urbano
+denominadas “La Joya” y “Ruta 2”, la Figura 3 muestra el recorrido de dichas rutas por
+las paradas llamadas “P24”, “P07” y “P29”.
+
+Figura 2 – Tabla informativa presentada al usuario final
+
+Figura 3 – Paradas que forman las rutas “La Joya” (izquierda) y “Ruta 2” (derecha)
+
+El algoritmo que se ha desarrollado en el servidor para determinar el próximo arribo
+de una UM, se presenta en la Figura 4. Para explicar el proceso realizado, se toma como
+ejemplo la parada de bus P07. Al ingresar los datos de un bus perteneciente a una
+ruta que transita por esta parada. Éste es registrado y en la pantalla de información se
+muestra la hora de arribo y el ID correspondiente a la unidad móvil. Según la frecuencia
+de buses establecida por la cooperativa de transporte, el tiempo estimado de arribo del
+siguiente bus es visualizado en la parada. El tiempo dependerá del horario, tráfico y si
+es un día laborable o no. Para visualizar en el informativo el ID del próximo bus a llegar,
+se realiza una búsqueda en la tabla de datos correspondiente a la anterior parada, sea
+esta P24 o P29 (según la dirección de la ruta). Se busca el N_ID (número identificados
+de la UM) del bus recién llegado, para luego buscar el vehículo con la misma ruta y
+dirección registrado después. Obtenido el ID de la siguiente unidad registrada en la
+anterior parada, este se visualiza en el informativo de la parada o en el medio digital
+donde se realiza la consulta. Si no se encuentra un bus registrado después del actual
+en la anterior parada, en el informativo se visualiza el mensaje “No definido”. De esta
+manera el mismo algoritmo se puede utilizar en todas las paradas.
+
+480
+
+RISTI, N.º E17, 01/2019
+
+RISTI - Revista Ibérica de Sistemas e Tecnologias de Informação
+
+Figura 4 – Diagrama de flujo del algoritmo desarrollado en el servidor web
+
+3.2. Unidad móvil
+El operador de la unidad móvil, introduce los datos de la ruta a realizar y el sentido
+(norte - sur o viceversa) en el dispositivo implementado. Se establece comunicación
+entre dicho dispositivo y la UP automáticamente, mientras se encuentren dentro del
+rango establecido por el alcance de los módulos de transmisión inalámbrica. Es decir,
+no es necesaria la activación manual por parte del chofer. Cuando los parámetros han
+sido ingresados, el módulo de comunicación en la UM se dispone en modo espera y
+al verificar que hay comunicación envía los datos a la UP. Ésta envía un mensaje de
+confirmación que controla la reproducción de audio alojado en la memoria interna de
+la UM y activa un indicador que señala que el proceso de transmisión ha finalizado. Si
+la parada no pertenece a la ruta elegida, el proceso la cierra y la UM vuelve a estar a la
+espera de un enlace disponible para la comunicación. De este modo si el automotor ha
+transitado por algún lugar cercano a otra parada no correspondiente, que se encuentra
+dentro del rango de comunicación no le afectará en ningún sentido. La trama de
+información enviada está conformada por datos del tipo entero y sus parámetros son: la
+ruta, dirección, cooperativa y la Id de la unidad. La Figura 5 ilustra el proceso realizado
+por la UM.
+
+RISTI, N.º E17, 01/2019
+
+481
+
+Plataforma y aplicación móvil para proporcionar información del transporte público
+
+Figura 5 –Diagrama de flujo del algoritmo desarrollado en la unidad móvil
+
+3.3. Unidad de procesamiento
+Está ubicada en la parada de bus y se encuentra programada para recibir los parámetros
+enviados desde la UP inalámbricamente. Si la información es válida, la UP envía la
+información a la base de datos presente en el servidor web. De forma paralela envía
+un mensaje a la UM confirmando su validación, lo cual controla la reproducción de
+un audio informativo en su parada. El audio alojado en la memoria interna indica la
+parada actual en la que se encuentra el transporte y la próxima estación. En la pantalla
+informativa se indica el arribo del transporte y la ruta que realiza. En la Figura 6 se
+muestra el procedimiento descrito.
+
+482
+
+RISTI, N.º E17, 01/2019
+
+RISTI - Revista Ibérica de Sistemas e Tecnologias de Informação
+
+Figura 6 – Diagrama de flujo del algoritmo desarrollado en la unidad de procesamiento
+
+3.4. Sitio web
+El diseño se lo realizó mediante la herramienta WordPress, con una pantalla de inicio
+intuitiva y amigable con el usuario. Utilizando la herramienta Google Maps API,
+se implementa un mapa del entorno urbano y la ubicación de las paradas en la ruta
+establecida. Para elaborar este mapa se han tomado más de trescientas coordenadas con
+un dispositivo GPS. Al navegar por esta interface el usuario encuentra una descripción
+detallada de las paradas y rutas disponibles. Además, los horarios, el clima y otros
+parámetros que facilitan una mejor distribución del tiempo y un plan de viaje más
+eficiente. Dentro del menú principal del sitio web, se encuentran las opciones “Paradas
+Innovadoras”, “Consultas” y “Monitoreo y Control”. Al seleccionar la primera opción
+se muestra un mapa de la ruta y la distribución de estas paradas inteligentes, como se
+presenta en la Figura 7. En sentido sur – norte con color azul y en dirección opuesta con
+color violeta.
+
+RISTI, N.º E17, 01/2019
+
+483
+
+Plataforma y aplicación móvil para proporcionar información del transporte público
+
+Figura 7 – Pantalla del sitio web donde se muestra el mapa de la ruta “La Joya”
+
+3.5. Aplicación móvil
+Fue desarrollada utilizando el software AppInventor, para celulares inteligentes que
+posean el sistema operativo Android. Según la página oficial de esta herramienta es
+compatible con todas las versiones de Android, aunque solo se probó con 5.1, 4.0 y 2.6. La
+aplicación permite al usuario realizar la consulta de los horarios del transporte público
+que circula por una cierta parada, mapas y rutas disponibles. La Figura 8 muestra la
+pantalla de inicio de la aplicación, la pantalla principal y el menú desplegable donde se
+selecciona la acción a realizar respectivamente. Para crear los mapas personalizados se
+utiliza la herramienta Google Maps Api, mediante programación en JavaScript. Para la
+generación del mapa “Ruta La Joya” fue necesario insertar en el código cada uno de los
+puntos (latitud, longitud) por el que transita la UM. La precisión del mapa depende de la
+cantidad de puntos tomados. Al combinar programación en JavaScript y AppInventor es
+posible el uso del GPS en el teléfono celular, donde se instala la aplicación para el trazo
+del mapa “Ubicación Paradas Innovadoras”.
+
+484
+
+RISTI, N.º E17, 01/2019
+
+RISTI - Revista Ibérica de Sistemas e Tecnologias de Informação
+
+Figura 8 – Pantallas que forman la aplicación desarrollada
+
+4. Resultados
+Los prototipos fueron implementados en dos unidades móviles (buses) y tres paradas (en
+ellas se encontraban los prototipos de las unidades de procesamiento), para la ejecución
+de las pruebas experimentales correspondientes. De esta manera se puede corroborar
+el correcto envío de datos en forma bidireccional, usando el módulo nRF24L01. Al no
+poseer acceso libre a las paradas de la localidad, estas unidades de procesamiento fueron
+instaladas en el interior de domicilios que se encuentran cerca de las paradas respectivas
+y dentro de la ruta que realizaban las unidades de transporte público.
+4.1. Con línea de vista
+Al enviar la información desde la UM hacia la UP, se lo realiza de manera efectiva y sin
+pérdida de paquetes a una distancia de hasta 20 metros. Cuando se transmiten los datos
+desde la UP hasta la UM la distancia máxima sin la presencia de interferencias es de 19
+metros. Para el monitoreo de la recepción de paquetes se utilizó un smartphone con la
+aplicación “Mobile SSH”, que permite la comunicación con la consola del terminal del
+prototipo de la unidad de procesamiento. La Figura 9 muestra el terminal de Raspberry
+abierto en un celular y debajo el prototipo y en la Figura 10 la pantalla informativa
+presentada al usuario. El tiempo que tarda la comunicación entre los dispositivos es de
+0,77 segundos.
+
+RISTI, N.º E17, 01/2019
+
+485
+
+Plataforma y aplicación móvil para proporcionar información del transporte público
+
+Figura 9 – Prueba del prototipo siguiendo las dos rutas establecidas
+
+Figura 10 – Pantalla informativa presentada al usuario
+
+4.2. Sin línea de vista
+Para realizar estas pruebas se tiene como obstáculo un edificio (construcción de por
+medio). No existió pérdida de los paquetes enviados entre la UM hacia la UP hasta una
+distancia máxima de 15 metros. Si la distancia es mayor a dicho valor existe comunicación
+de forma intermitente.
+4.3. Tiempo de respuesta del sistema
+El tiempo que tarda el sitio web en actualizarse luego de recibir los parámetros respectivos
+desde la UP, varía desde de 1 hasta 3 y 4 segundos. Esta operación es ejecutada en la
+parte del cliente (servidor) e influyen factores como la calidad de conexión a internet que
+posee el usuario y su velocidad de transmisión. El tamaño de los ficheros que se utilizan
+
+486
+
+RISTI, N.º E17, 01/2019
+
+RISTI - Revista Ibérica de Sistemas e Tecnologias de Informação
+
+para el informativo presente en las paradas es de 5.8 MB en el momento de la primera
+carga. Para la actualización del informativo se utiliza 25.71 kilobytes y las pruebas de
+medición de su velocidad de carga fueron realizadas mediante la herramienta Pingdom.
+Se realizaron 256 peticiones y los resultados obtenidos se los detallan en la Tabla 1.
+Tipo de
+contenido
+
+Porcentaje
+
+Tamaño
+
+Porcentaje del número de
+peticiones requeridas
+
+Número de
+Peticiones
+
+Multimedia
+
+89.4%
+
+5.15MB
+
+94.9%
+
+243
+
+HTML
+
+8.7%
+
+515.69KB
+
+2%
+
+5
+
+Script
+
+1.6%
+
+93.18 KB
+
+1.2%
+
+3
+
+Imágenes
+
+0.2%
+
+10.33 KB
+
+1.2%
+
+3
+
+CCS (Estilos)
+
+0.1%
+
+5.84 KB
+
+0.8%
+
+2
+
+Tabla 1 – Parámetros obtenidos en las pruebas de transmisión de la información
+
+5. Conclusiones
+El sistema informativo descrito en este trabajo, permite a los usuarios del transporte
+público obtener información sobre el servicio que están recibiendo. Esto contribuye
+a una mejor gestión y organización del tránsito urbano, ya que se ha desarrollado
+una propuesta tecnológica que ofrece buenas prestaciones a un costo reducido. La
+comunicación entre las unidades móviles (buses) y las unidades de procesamiento
+(paradas) fue satisfactoria utilizando módulos inalámbricos económicos, que permiten
+su escalabilidad. Los prototipos fueron implementados en 2 buses y 3 paradas, donde
+la velocidad de transmisión de datos obtenida es de hasta 2 Mbps, con un alcance de
+20 metros con conexión automática y rápida con línea de vista directa. Mientras que
+cuando la línea de vista presente obstáculos el alcance máximo obtenido es de 15
+metros. Se debe enfatizar que los módulos de comunicación empleados tienen un rango
+operativo superior (más de 500 metros), pero se han configurado de esta forma para
+evitar confusiones en la comunicación entre la UM y la UP respectiva. El tiempo que
+tarda la comunicación entre los dispositivos es de 0,77 segundos. La presentación de la
+información a los pasajeros se ha realizado a través de una interfaz intuitiva que muestra
+datos sobre la ruta que se está siguiendo, tiempo de espera para el próximo arribo, clima,
+entre otros. Además, para mayor facilidad del uso de este servicio se ha dotado al sistema
+de un sitio web, que tarda desde 1 hasta 3 y 4 segundos en actualizarse, dependiendo
+de la velocidad de conexión a internet existente. La aplicación es compatible con todo
+smartphone que posea sistema operativo Android y su efectividad también fue probada.
+El trabajo que se ha presentado constituye una base para posteriores investigaciones
+que contribuyan a mejorar el monitoreo y control de los servicios públicos de países
+en desarrollo, que carecen de recursos económicos. Es por ello que inicialmente como
+trabajo futuro se plantea la implementación de esta propuesta en más unidades de
+transporte, lo cual permitirá obtener mayores datos y por ende mejores resultados.
+Además, se emplearán protocolos que permitan elevar el nivel de seguridad del sitio web
+y de la aplicación móvil para proteger los datos generados. De forma paralela, se propone
+desarrollar soluciones similares en otros campos de la ciencia como la agricultura y la
+industria, ya que los sistemas de monitoreo van tomando relevancia en la sociedad actual.
+RISTI, N.º E17, 01/2019
+
+487
+
+Plataforma y aplicación móvil para proporcionar información del transporte público
+
+Referencias
+Abdelsalam, H. M., Nazri Borhan, M., Milad, A., Imhimmed, H., Alfakhri, A.Y. Y.,
+Alshetwia, A. B.Z. & Atiq Ok Rahmat, R. (2018). Web-Based Knowledge Evolution
+for Thinking Green Transportation Using Expert Systems. International Journal
+of Engineering & Technology, 7. 2, 837-839. doi: https://doi.org/10.14419/ijet.
+v7i2.29.14267
+Arciniegas Aguirre, S. M., Mafla Rivadeneira, D. R., Guerra Torrealba, L. R., Narváez
+Erazo, L. D., Rivas-Echeverría, F. I. & Rivero Albarran, D. M. (2018). Metodología
+para el almacenamiento y visualización de datos masivos en invernadero basado
+en el Internet de las Cosas. RISTI - Revista Iberica de Sistemas e Tecnologias de
+Informacao, E15, 1-12.
+Bie, Y., Gong, X. & Liu, Z. (2015). Time of day intervals partition for bus schedule
+using GPS data. Transportation Research Part C, 60, 443-456. doi: https://doi.
+org/10.1016/j.trc.2015.09.016
+Guo, Z., Derian, A. & Zhao, J. (2015). Smart Devices and Travel Time Use by Bus Passengers
+in Vancouver, Canada. International Journal of Sustainable Transportation, 9.5,
+335-347. doi: https://doi.org/10.1080/15568318.2013.784933
+Handte, M. Foell, S., Wagner, S., Kortuem, G. & Marrón, P. J. (2016). An Internet-ofThings Enabled Connected Navigation System for Urban Bus Riders. IEEE Internet
+of Things Journal, 3. 5, 735-744. doi: https://doi.org/10.1109/JIOT.2016.2554146
+Harris, N. (2017). The Design and Development of Assistive Technology. IEEE Potentials,
+36.1, 24-28. doi: https://doi.org/10.1109/MPOT.2016.2615107
+Johnson, R. D., Lukaszewski, K. M. & Stone, D. L. (2016). The Evolution of the Field
+of Human Resource Information Systems: Co-Evolution of Technology and HR
+Processes. Communications of the Association for Information Systems, 38, 533553. doi: https://doi.org/10.17705/1CAIS.03828
+Lee, S., Tewolde, G. & Kwon, J. (2014). Design and Implementation of Vehicle Tracking
+System Using GPS/GSM/GPRS Technology and Smartphone Application. 2014
+IEEE World Forum on Internet of Things (WF-IoT), Seoul, South Korea, 353-358.
+IEEE. doi: https://doi.org/10.1109/WF-IoT.2014.6803187
+Mazloumi, E., Currie, G. & Rose, G. (2010). Using GPS Data to Gain Insight into Public
+Transport Travel Time Variability. Journal of Transportation Engineering, 136.7,
+623-631. doi: https://doi.org/10.1061/(ASCE)TE.1943-5436.0000126
+Megalingam, R. K., Raj, N., Soman, A., Prakash, L., Satheesh, N. & Vijay, D. (2014).
+Smart, public buses information system. 2014 International Conference on
+Communication and Signal Processing, Melmaruvathur, India, 1343-1347. IEEE.
+doi: https://doi.org/10.1109/ICCSP.2014.6950068
+Shakir, M., Hammood, M. & Muttar, A. Kh. (2018). Literature review of security issues
+in saas for public cloud computing: a meta-analysis. International Journal of
+Engineering & Technology, 7.3, 1161-1171. doi: https://doi.org/10.14419/ijet.
+v7i3.13075
+488
+
+RISTI, N.º E17, 01/2019
+
+RISTI - Revista Ibérica de Sistemas e Tecnologias de Informação
+
+Siła-Nowicka, K., Vandrol, J., Oshan, T., Long, J. A. Demšar, U. & Fotheringham, A. S.
+(2016). Analysis of human mobility patterns from GPS trajectories and contextual
+information. International Journal of Geographical Information Science, 30, 881906. doi: https://doi.org/10.1080/13658816.2015.1100731
+Silva, C. A., Toasa, R., Guevara, J., Martinez, H. D. & Vargas J. (2018). Mobile Application
+to Encourage Local Tourism with Context-Aware Computing. In: Rocha Á., Guarda
+T. (eds) Proceedings of the International Conference on Information Technology
+& Systems (ICITS 2018). ICITS 2018. Advances in Intelligent Systems and
+Computing, 721. Springer, Cham, 796-803. doi: https://doi.org/10.1007/978-3319-73450-7_75
+Stoll, N. B.; Glick, T. & Figliozzi, M. A. (2016) Using High-Resolution Bus GPS Data to
+Visualize and Identify Congestion Hot Spots in Urban Arterials. Transportation
+Research Record, 2539, 20-29. doi: https://doi.org/10.3141/2539-03
+Sungur, C., Babaoglu, I. & Sungur, A. (2015). Smart Bus Station-Passenger Information
+System. 2015 2nd International Conference on Information Science and Control
+Engineering (ICISCE), Shanghai, China, 921-925. IEEE. doi: http://doi.
+ieeecomputersociety.org/10.1109/ICISCE.2015.209
+
+RISTI, N.º E17, 01/2019
+
+489
+
+© 2019. This work is published under
+https://creativecommons.org/licenses/by-nc-nd/4.0(the
+“License”). Notwithstanding the ProQuest Terms and
+Conditions, you may use this content in accordance with the
+terms of the License.
+
+
