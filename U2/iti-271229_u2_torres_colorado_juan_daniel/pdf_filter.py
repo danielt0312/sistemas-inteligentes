@@ -1,5 +1,6 @@
 import os
 import subprocess
+import shutil
 from classifier import Classifier
 
 """
@@ -17,7 +18,7 @@ class PDFLector():
         self.directories = [
             dir_path,   # raiz
             dir_path + '/documentos',
-            dir_path + '/documentos/txt',
+            dir_path + '/documentos/analysis',
             dir_path + '/documentos/Inglés',
             dir_path + '/documentos/Español',
             './train'   # carpeta para entrenar el clasificador
@@ -44,7 +45,7 @@ class PDFLector():
     def validFiles(self):
         if (self.validDir(self.directories[0])):
             files = self.listFiles(self.directories[0])
-            self.pdf_files = self.getPDFFiles(files)
+            self.pdf_files = self.getNameFiles(self.filtFiles(files, '.pdf'))
 
             if len(self.pdf_files) == 0:
                 self.causes.append(f"No se encontraron archivos PDFs en el directorio '{self.directories[0]}'.")
@@ -76,19 +77,40 @@ class PDFLector():
         return os.path.exists(directory)
 
     # Clasificar los documentos
-    def classify(self):
+    def classifyFiles(self):
         if (self.isValid()):
             dir_train = self.directories[5] + '/'
 
-            print('Iniciando clasificacion')
-            cf = Classifier(dir_train, self.listFiles(dir_train))
-            for f in self.listFiles(self.directories[2]):
-                cf.classify(self.directories[2]+'/'+f, f)
-            print('Clasificación terminada')
-            
-        else:
-            print(self.causes[0])
+            self.files_en = []
+            self.files_es = []
 
+            print('Iniciando clasificacion, esto puede llevar tiempo...')
+            self.cf = Classifier(dir_train, self.listFiles(dir_train))
+            for f in self.listFiles(self.directories[2]):
+                self.classifyFile(self.directories[2], f)
+            print('Clasificación terminada')
+
+            self.moveFiles(self.directories[0], self.directories[3], self.getNameFiles(self.files_en))
+            self.moveFiles(self.directories[0], self.directories[4], self.getNameFiles(self.files_es))
+        else:
+            print(self.causes[-1])
+
+    def classifyFile(self, dir_path, f):
+        language = self.cf.classify(dir_path+'/'+f, f)
+        if (language == 'es'):
+            self.files_es.append(f)
+        elif (language == 'en'):
+            self.files_en.append(f)
+        
+    # Mover una lista de archivos a otro directorio
+    def moveFiles(self, dir_orig, dir_dest, files):
+        for f in files:
+            self.moveFile(dir_orig+'/'+f+'.pdf', dir_dest+'/'+f+'.pdf')
+
+    # Mover un archivo a otro directorio
+    def moveFile(self, origin, destiny):
+        shutil.move(origin, destiny)
+    
     # Crear directorio
     def createDir(self, directory):
         try:
@@ -103,25 +125,25 @@ class PDFLector():
     def convertFiles(self):
         if (self.isValid()):
             for name in self.pdf_files:
-                if (not self.pdfToTxt(self.directories[0] + '/' + name + '.pdf', self.directories[2] + '/' + name + '.txt')):
+                if (not self.pdfToTxt(self.directories[0] + '/' + name + '.pdf', self.directories[2] + '/' + name + '.txt', name)):
                     print(self.causes[-1])
             print('Conversión terminada.')
         else:
             print(self.causes[-1])
     
     # Conversión de PDF a TXT
-    def pdfToTxt(self, pdf_path, txt_path):
+    def pdfToTxt(self, pdf_path, txt_path, fname):
         try:
             subprocess.run(["pdftotext", pdf_path, txt_path])
-            print(f"Archivo PDF convertido a TXT: {txt_path}")
+            print(f"Archivo PDF convertido a TXT: {fname}")
         except Exception as ex:
             self.causes.append(f"No se pudo convertir PDF a TXT: \nERROR:{ex}")
             return False
         return True
     
-    # Devolver archivos PDFs y sus nombres
-    def getPDFFiles(self, files):
-        return self.getNameFiles(self.filtFiles(files, '.pdf'))
+    # Devolver los nombres de archivos PDFs
+    def getPDFFilesName(self, files):
+        return 
     
     # Listar los archivos de un directorio 
     def listFiles(self, directory):
@@ -132,7 +154,7 @@ class PDFLector():
         return [fname for fname in files if fname.endswith(extension)]
     
     # Devolver los nombres de los archivos
-    def getNameFiles(self, files):
+    def     getNameFiles(self, files):
         return [os.path.splitext(fname)[0] for fname in files]
 
     # Devolver causas
