@@ -76,7 +76,7 @@ class PDFLector():
     def pathExists(self, directory):
         return os.path.exists(directory)
 
-    # Clasificar los documentos
+    # Clasificar todos los archivos PDFs de la carpeta proporcionada
     def classifyFiles(self):
         if (self.isValid()):
             dir_train = self.directories[5] + '/'
@@ -94,7 +94,8 @@ class PDFLector():
             self.moveFiles(self.directories[0], self.directories[4], self.getNameFiles(self.files_es))
         else:
             print(self.causes[-1])
-
+    
+    # Clasificar un archivo si está en inglés o español
     def classifyFile(self, dir_path, f):
         language = self.cf.classify(dir_path+'/'+f, f)
         if (language == 'es'):

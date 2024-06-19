@@ -7,10 +7,11 @@ from sklearn.naive_bayes import MultinomialNB
 Clase para determinar si un archivo TXT está mayormente escrito en español o inglés
 """
 class Classifier():
+    # Constructor
     def __init__(self, dir_train, files_train):
         self.createClassifier(dir_train, files_train)
-        pass
 
+    # Crear clasificador que sirva para poder identificar el idioma de un documento
     def createClassifier(self, dir_train, files_train):
         self.labels = ['es', 'en']
         self.setDirTrain(dir_train)
@@ -25,6 +26,7 @@ class Classifier():
         grid_search.fit(self.vectors, self.train_targets)
         self.classifier = grid_search.best_estimator_
 
+    # Entrenar el clasificador
     def train_test(self, files_train):
         self.data = []
         self.targets = []
@@ -36,6 +38,7 @@ class Classifier():
         train_data, test_data, self.train_targets, test_targets = train_test_split(self.data, self.targets, train_size=0.8, test_size=0.2, random_state=42)
         self.vectors = self.vectorizer.fit_transform(train_data)
 
+    # Cargar data y targets para los vectores
     def load_data_targets(self, fname):
         paras = self.text2paragraphs(self.dir_train + '/' + fname)
         self.data.extend(paras)
@@ -43,6 +46,7 @@ class Classifier():
         index = self.labels.index(country)
         self.targets += [index] * len(paras)
 
+    # Clasificar el idioma de un documento de acuerdo a un archivo proporcionado
     def classify(self, dir_file, fname):
         paragraphs = self.text2paragraphs(dir_file)
         if not paragraphs:
@@ -57,29 +61,21 @@ class Classifier():
             word_counts[self.labels[prediction]] += len(words)
 
         label = 'es' if word_counts['es'] > word_counts['en'] else 'en'
-        # if (word_counts['es'] > word_counts['en']):
-        #     label = 'es'
-        # else:
-        #     label = 'en'
-          
         print(f"{label} [{self.labels[0]}: {word_counts['es']}, {self.labels[1]}: {word_counts['en']}]\t| '{fname}'")
         return label
 
-
-
-    def loadLabels(self, files):
-        self.labels = {fname[:2] for fname in files if fname.endswith(".txt")}
-        self.labels = sorted(list(self.labels))
-
+    # Convertir un archivo TXT a un parrafo
     def text2paragraphs(self, filename, min_size=1):
         with open(filename, 'r', encoding='utf-8') as file:
             txt = file.read()
         paragraphs = [para for para in txt.split("\n\n") if len(para) > min_size]
         return paragraphs
     
+    # Establecer el directorio en donde se encuentran los archivos para entrenar el clasificador
     def setDirTrain(self, dir_train):
         self.dir_train = dir_train
-    
+
+    # Stop Words para el idioma español
     def SPANISH_STOP_WORDS(self):
         return [
             'de', 'la', 'que', 'el', 'en', 'y', 'a', 'los', 'del', 'se', 'las', 'por', 'un', 'para', 'con', 'no', 'una', 
