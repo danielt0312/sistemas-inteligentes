@@ -1,23 +1,14 @@
-from __future__ import print_function
-
-import numpy as np
 import pandas as pd
 import nltk     # instalar: pip install nltk
 import re
-import os
-import codecs
-from sklearn import feature_extraction
-import mpld3    # instalar: pip install mpld3
 
 from nltk.stem.snowball import SnowballStemmer
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 from sklearn.cluster import KMeans
 import joblib
-import os  # for os.path.basename
 
 import matplotlib.pyplot as plt
-import matplotlib as mpl
 
 from sklearn.manifold import MDS
 
@@ -107,7 +98,7 @@ Tf-idf and document similarity
 #define vectorizer parameters
 tfidf_vectorizer = TfidfVectorizer(max_df=0.8, max_features=200000,
                                  min_df=0.2, stop_words='english',
-                                 use_idf=True, tokenizer=tokenize_and_stem, ngram_range=(1,3))
+                                 use_idf=True,tokenizer=tokenize_and_stem, ngram_range=(1,3))
 
 tfidf_matrix = tfidf_vectorizer.fit_transform(synopses) #fit the vectorizer to synopses
 
@@ -144,9 +135,9 @@ clusters = km.labels_.tolist()
 
 print(clusters)
 
-films = { 'title': titles, 'rank': ranks, 'synopsis': synopses, 'cluster': clusters, 'genre': genres }
+films = { 'title': titles, 'rank': ranks, 'synopsis': synopses, 'cluster': clusters}
 
-frame = pd.DataFrame(films, index = [clusters] , columns = ['rank', 'title', 'cluster', 'genre'])
+frame = pd.DataFrame(films, index = [clusters] , columns = ['rank', 'title', 'cluster'])
 
 print(frame)
 
