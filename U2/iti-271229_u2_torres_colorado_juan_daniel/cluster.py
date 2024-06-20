@@ -96,12 +96,11 @@ class Cluster():
                     if term in self.vocab_frame.index:
                         word = self.vocab_frame.loc[term]['words']
                         if isinstance(word, pd.Series):
-                            word = word.iloc[0]  # Si es una Serie, toma el primer elemento
-                        word = word.encode('utf-8', 'ignore').decode()  # Codificar y decodificar
+                            word = word.iloc[0]  # Si es una serie, toma el primer elemento
+                        word = word.encode('utf-8', 'ignore').decode()
                         top_words.append(word)
                     else:
-                        # Si la palabra no está en vocab_frame, manejarla adecuadamente
-                        top_words.append(term)  # O cualquier manejo que desees darle
+                        top_words.append(term) 
                 if len(top_words) >= 3:  # Mostrar solo las 3 principales palabras
                     break
 
@@ -115,8 +114,6 @@ class Cluster():
             for title in self.frame.loc[i]['title'].values.tolist():
                 print(f' {title}', end=',')
             print()
-
-
 
     def scaling(self):
         # convert two components as we're plotting points in a two-dimensional plane
