@@ -17,6 +17,7 @@ class Window(QWidget):
 
         # Conectar señales provinientes del filtro
         self.lector.errorSignal.connect(self.messageError)
+        self.lector.infoSignal.connect(self.messageInfo)
 
         # Crear ventana con elementos de la interfaz
         self.customUI()
@@ -38,12 +39,17 @@ class Window(QWidget):
         # Botón para clasificar
         btnClassifier = QPushButton('Clasificar documentos')
         btnClassifier.clicked.connect(self.lector.classifyFiles)
+        
+        # Botón para mostrar clustering
+        btnClustering = QPushButton('Realizar clustering')
+        btnClustering.clicked.connect(self.lector.clustering)
 
         # GridLayout para las acciones
         gridTools = QGridLayout()
         gridTools.addWidget(btnSelectDir, 0, 0)
         gridTools.addWidget(btnConvertFiles, 1, 0)
         gridTools.addWidget(btnClassifier, 2, 0)
+        gridTools.addWidget(btnClustering, 3, 0)
 
         # GridLayout para la figura
         self.gridFigure = QGridLayout()
@@ -80,12 +86,13 @@ class Window(QWidget):
             defaultButton = QMessageBox.StandardButton.Close,
         )
     
+    @pyqtSlot(str)
     # Mostrar procesos terminados/completados que se generan en el programa
-    def messageCorrect(self, causa):
-        return QMessageBox.warning(
+    def messageInfo(self, causa):
+        return QMessageBox.information(
             self,
-            "Advertencia",
+            "Información",
             causa,
-            buttons = QMessageBox.StandardButton.Close,
-            defaultButton = QMessageBox.StandardButton.Close,
+            buttons = QMessageBox.StandardButton.Ok,
+            defaultButton = QMessageBox.StandardButton.Ok,
         )

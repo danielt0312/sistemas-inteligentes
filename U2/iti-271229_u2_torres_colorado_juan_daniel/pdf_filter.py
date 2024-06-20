@@ -9,13 +9,16 @@ from cluster import Cluster
 Clase para procesar los archivos PDF 
 """
 class PDFFilter(QObject):
-    errorSignal = pyqtSignal(str)  # Señal que emite una cadena (mensaje de error)
+    errorSignal = pyqtSignal(str)  # Señal que emite una mensaje de error
+    infoSignal = pyqtSignal(str)  # Señal que emite una mensaje de informacion
 
     # Constructor
     def __init__(self, dir_path='.'):
         super().__init__()
         self.causes = []
         self.pdf_files = []
+        self.files_en = []
+        self.files_es = []
         self.setDirPath(dir_path)
 
     # Actualizar Directorio
@@ -72,36 +75,46 @@ class PDFFilter(QObject):
             self.causes.append(f"El directorio '{directory}' no fue correctamente proporcionado.")
             return False
         return True
+    
+    # Validar si hay documentos en inglés ya clasificados
+    def validEnFiles(self):
+        if self.files_en == None or len(self.files_en) == 0:
+            self.causes.append(f"No se ha clasificado ningún documento en Inglés aún.")
+            self.emitErrorSignal()
+            return False
+        return True
 
     # Clasificar todos los archivos PDFs de la carpeta proporcionada
     def classifyFiles(self):
         if self.isValid() and self.validTrain():
             dir_train = self.directories[5] + '/'
 
-            self.files_en = []
-            self.files_es = []
+            self.files_en.clear()
+            self.files_es.clear()
 
+            self.emitInfoSignal('La clasificación puede llevar tiempo en completarse. Se le hará saber cuando este proceso termine.')
             print('Iniciando clasificación, esto puede llevar tiempo...')
             self.cf = Classifier(dir_train, self.listFiles(dir_train))
             for f in self.listFiles(self.directories[2]):
                 self.classifyFile(self.directories[2], f)
             print('Clasificación terminada')
+            self.emitInfoSignal('La clasificación ha terminado.')
 
             # self.moveFiles(self.directories[0], self.directories[3], self.getNameFiles(self.files_en))
             # self.moveFiles(self.directories[0], self.directories[4], self.getNameFiles(self.files_es))
             # self.renameFiles()
-            self.clustering()
 
     # Implementar las tecnicas de clustering
     def clustering(self):
-        titles = self.getNameFiles(self.files_en)
-        content = []
-        
-        for f in self.files_en:
-            content.append((" ".join(self.cf.text2paragraphs(self.directories[2] + '/' + f)).replace('\n', ' ')))
-        
-        cl = Cluster(titles, content, 3)
-        cl.showFigures()
+        if self.isValid() and self.validTrain() and self.validEnFiles():
+            titles = self.getNameFiles(self.files_en)
+            content = []
+            
+            for f in self.files_en:
+                content.append((" ".join(self.cf.text2paragraphs(self.directories[2] + '/' + f)).replace('\n', ' ')))
+            
+            cl = Cluster(titles, content, 3)
+            cl.showFigures()
 
     # Clasificar un archivo si está en inglés o español
     def classifyFile(self, dir_path, f):
@@ -182,6 +195,10 @@ class PDFFilter(QObject):
     def emitErrorSignal(self):
         error_message = "\n".join(self.causes)  # Unir todas las causas en un mensaje de error
         self.errorSignal.emit(error_message)  # Emitir la señal con el mensaje de error
+    
+    # Mostrar mensajes de informacion
+    def emitInfoSignal(self, cause):
+        self.infoSignal.emit(cause)  # Emitir la señal con el mensaje de error
 
     # Listar los archivos de un directorio 
     def listFiles(self, directory):

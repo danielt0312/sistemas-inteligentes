@@ -27,23 +27,25 @@ class Cluster():
         word_counts = np.asarray(word_count_matrix.sum(axis=0)).flatten()
         word_freq = list(zip(count_vectorizer.get_feature_names_out(), word_counts))
         word_freq_sorted = sorted(word_freq, key=lambda x: x[1], reverse=True)
-
-        print("Top 10 palabras más frecuentes:", word_freq_sorted[:10])
         return word_freq_sorted
     
     def vocab(self):
-        #not super pythonic, no, not at all.
-        #use extend so it's a big flat list of vocab
+        # not super pythonic, no, not at all.
+        # use extend so it's a big flat list of vocab
         totalvocab_stemmed = []
         totalvocab_tokenized = []
         for i in self.content:
-            allwords_stemmed = self.tokenize_and_stem(i) #for each item in 'content ', tokenize/stem
-            totalvocab_stemmed.extend(allwords_stemmed) #extend the 'totalvocab_stemmed' list
-            
+            allwords_stemmed = self.tokenize_and_stem(i)  # for each item in 'content', tokenize/stem
+            totalvocab_stemmed.extend(allwords_stemmed)  # extend the 'totalvocab_stemmed' list
+
             allwords_tokenized = self.tokenize_only(i)
             totalvocab_tokenized.extend(allwords_tokenized)
 
-        self.vocab_frame = pd.DataFrame({'words': totalvocab_tokenized}, index = totalvocab_stemmed)
+        # Remove short words from vocab_frame
+        vocab_frame_data = {'words': totalvocab_tokenized}
+        self.vocab_frame = pd.DataFrame(vocab_frame_data, index=totalvocab_stemmed)
+        self.vocab_frame = self.vocab_frame[self.vocab_frame['words'].apply(lambda x: len(x) > 2)]
+        
         self.vectorizer()
 
     def vectorizer(self):
@@ -77,32 +79,44 @@ class Cluster():
         self.saveModel()
         files = {'title': self.titles, 'content': self.content, 'cluster': self.clusters}
         self.frame = pd.DataFrame(files, index = [self.clusters] , columns = ['title', 'cluster'])
-
+    
     def showTopTerms(self):
         print("Top terms per cluster:")
-        #sort cluster centers by proximity to centroid
         order_centroids = self.km.cluster_centers_.argsort()[:, ::-1] 
+
         self.cluster_names = {}
-        
+
         for i in range(self.num_clusters):
             print("Cluster %d words:" % i, end='')
 
             top_words = []
-            for ind in order_centroids[i, :6]:
-                word = self.vocab_frame.loc[self.terms[ind].split(' ')].values.tolist()[0][0].encode('utf-8', 'ignore').decode()
-                top_words.append(word)
-            
-            self.cluster_names[i] = ', '.join(top_words[:3])
+            for ind in order_centroids[i, :]:
+                term = self.terms[ind]
+                if len(term) > 2:  # Filtrar palabras cortas
+                    if term in self.vocab_frame.index:
+                        word = self.vocab_frame.loc[term]['words']
+                        if isinstance(word, pd.Series):
+                            word = word.iloc[0]  # Si es una Serie, toma el primer elemento
+                        word = word.encode('utf-8', 'ignore').decode()  # Codificar y decodificar
+                        top_words.append(word)
+                    else:
+                        # Si la palabra no está en vocab_frame, manejarla adecuadamente
+                        top_words.append(term)  # O cualquier manejo que desees darle
+                if len(top_words) >= 3:  # Mostrar solo las 3 principales palabras
+                    break
 
-            
-            for ind in order_centroids[i, :6]: #replace 6 with n words per cluster
-                print(' %s' % self.vocab_frame.loc[self.terms[ind].split(' ')].values.tolist()[0][0].encode('utf-8', 'ignore'), end=',')
-            print() #add whitespace
-            
+            self.cluster_names[i] = ', '.join(top_words)
+
+            for word in top_words:
+                print(f' {word}', end=',')
+            print()
+
             print("Cluster %d titles:" % i, end='')
             for title in self.frame.loc[i]['title'].values.tolist():
-                print(' %s,' % title, end='')
-            print() #add whitespace
+                print(f' {title}', end=',')
+            print()
+
+
 
     def scaling(self):
         # convert two components as we're plotting points in a two-dimensional plane
