@@ -4,41 +4,32 @@ import re
 import joblib
 import os
 import matplotlib.pyplot as plt
+import numpy as np
 
 from nltk.stem.snowball import SnowballStemmer
-from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.feature_extraction.text import TfidfVectorizer, CountVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 from sklearn.cluster import KMeans
 from sklearn.manifold import MDS
 from scipy.cluster.hierarchy import ward, dendrogram
 
 class Cluster():
-    def __init__(self):
-        pass
+    def __init__(self, titles, contents, num_clusters=3):
+        self.setTitles(titles)
+        self.setContents(contents)
+        print(f"Documentos procesados: {len(self.content)}")
+        self.setClusters(num_clusters)
+        self.analyze_word_distribution()
+    
+    def analyze_word_distribution(self):
+        count_vectorizer = CountVectorizer(stop_words='english')
+        word_count_matrix = count_vectorizer.fit_transform(self.content)
+        word_counts = np.asarray(word_count_matrix.sum(axis=0)).flatten()
+        word_freq = list(zip(count_vectorizer.get_feature_names_out(), word_counts))
+        word_freq_sorted = sorted(word_freq, key=lambda x: x[1], reverse=True)
 
-    def tokenize_and_stem(self, text):
-        stemmer = SnowballStemmer("english")
-
-        # first tokenize by sentence, then by word to ensure that punctuation is caught as it's own token
-        tokens = [word for sent in nltk.sent_tokenize(text) for word in nltk.word_tokenize(sent)]
-        filtered_tokens = []
-        # filter out any tokens not containing letters (e.g., numeric tokens, raw punctuation)
-        for token in tokens:
-            if re.search('[a-zA-Z]', token):
-                filtered_tokens.append(token)
-        stems = [stemmer.stem(t) for t in filtered_tokens]
-        return stems
-
-
-    def tokenize_only(self, text):
-        # first tokenize by sentence, then by word to ensure that punctuation is caught as it's own token
-        tokens = [word.lower() for sent in nltk.sent_tokenize(text) for word in nltk.word_tokenize(sent)]
-        filtered_tokens = []
-        # filter out any tokens not containing letters (e.g., numeric tokens, raw punctuation)
-        for token in tokens:
-            if re.search('[a-zA-Z]', token):
-                filtered_tokens.append(token)
-        return filtered_tokens
+        print("Top 10 palabras más frecuentes:", word_freq_sorted[:10])
+        return word_freq_sorted
     
     def vocab(self):
         #not super pythonic, no, not at all.
@@ -53,54 +44,64 @@ class Cluster():
             totalvocab_tokenized.extend(allwords_tokenized)
 
         self.vocab_frame = pd.DataFrame({'words': totalvocab_tokenized}, index = totalvocab_stemmed)
+        self.vectorizer()
 
     def vectorizer(self):
         #define vectorizer parameters
-        tfidf_vectorizer = TfidfVectorizer(max_df=0.8, max_features=200000,
-                                        min_df=0.2, stop_words='english',
+        tfidf_vectorizer = TfidfVectorizer(max_df=0.85, max_features=200000,
+                                        min_df=0.02, stop_words='english',
                                         use_idf=True,tokenizer=self.tokenize_and_stem, ngram_range=(1,3))
 
         self.tfidf_matrix = tfidf_vectorizer.fit_transform(self.content) #fit the vectorizer to synopses
 
-        # print(tfidf_matrix.shape)
         self.terms = tfidf_vectorizer.get_feature_names_out()
         self.dist = 1 - cosine_similarity(self.tfidf_matrix)
+        self.kmeansClustering()
 
-    def kmeansClustering(self, num_clusters = 3):
-        self.km = KMeans(n_clusters=num_clusters)
+    def kmeansClustering(self):
+        self.km = KMeans(n_clusters=self.num_clusters)
         self.km.fit(self.tfidf_matrix)
-        self.saveModel()
         self.clusters = self.km.labels_.tolist()
-        self.showTopTerms(num_clusters)
+        self.loadModel()
+        self.showTopTerms()
+        self.scaling()
     
     def saveModel(self):
-        if not os.path.exists('./doc_cluster.pkl'):
-            joblib.dump(self.km, 'doc_cluster.pkl')
+        if os.path.exists('./doc_cluster.pkl'):
+            os.remove('./doc_cluster.pkl')
+        joblib.dump(self.km, 'doc_cluster.pkl')
+        print("'doc_cluster.pkl' creado")
         self.km = joblib.load('doc_cluster.pkl')
 
     def loadModel(self):
+        self.saveModel()
         files = {'title': self.titles, 'content': self.content, 'cluster': self.clusters}
-        frame = pd.DataFrame(files, index = [self.clusters] , columns = ['title', 'cluster'])
-        grouped = frame['rank'].groupby(frame['cluster']) #groupby cluster for aggregation purposes
+        self.frame = pd.DataFrame(files, index = [self.clusters] , columns = ['title', 'cluster'])
 
-    def showTopTerms(self, num_clusters = 3):
+    def showTopTerms(self):
         print("Top terms per cluster:")
-        print()
         #sort cluster centers by proximity to centroid
         order_centroids = self.km.cluster_centers_.argsort()[:, ::-1] 
-
-        for i in range(num_clusters):
+        self.cluster_names = {}
+        
+        for i in range(self.num_clusters):
             print("Cluster %d words:" % i, end='')
+
+            top_words = []
+            for ind in order_centroids[i, :6]:
+                word = self.vocab_frame.loc[self.terms[ind].split(' ')].values.tolist()[0][0].encode('utf-8', 'ignore').decode()
+                top_words.append(word)
+            
+            self.cluster_names[i] = ', '.join(top_words[:3])
+
             
             for ind in order_centroids[i, :6]: #replace 6 with n words per cluster
                 print(' %s' % self.vocab_frame.loc[self.terms[ind].split(' ')].values.tolist()[0][0].encode('utf-8', 'ignore'), end=',')
-            print() #add whitespace
             print() #add whitespace
             
             print("Cluster %d titles:" % i, end='')
             for title in self.frame.loc[i]['title'].values.tolist():
                 print(' %s,' % title, end='')
-            print() #add whitespace
             print() #add whitespace
 
     def scaling(self):
@@ -110,16 +111,10 @@ class Cluster():
         mds = MDS(n_components=2, dissimilarity="precomputed", random_state=1)
         pos = mds.fit_transform(self.dist)  # shape (n_components, n_samples)
         self.xs, self.ys = pos[:, 0], pos[:, 1]
+        self.loadClusters()
 
-    def setClusters(self):
-        self.cluster_colors = {0: '#1b9e77', 1: '#d95f02', 2: '#7570b3', 3: '#e7298a', 4: '#66a61e'}
-
-        #set up cluster names using a dict
-        self.cluster_names = {0: 'Love, fall, american', 
-                        1: 'World, war, during', 
-                        2: 'New, meet, world', 
-                        3: 'Life, relationships, american', 
-                        4: 'Family, american, relationships'}
+    def loadClusters(self):
+        self.cluster_colors = {0: '#1b9e77', 1: '#d95f02', 2: '#7570b3'}
         
         #create data frame that has the result of the MDS plus the cluster numbers and titles
         self.df = pd.DataFrame(dict(x=self.xs, y=self.ys, label=self.clusters, title=self.titles)) 
@@ -130,6 +125,12 @@ class Cluster():
         # set up plot
         fig, self.ax = plt.subplots(figsize=(17, 9)) # set size
         self.ax.margins(0.05) # Optional, just adds 5% padding to the autoscaling
+        self.groupLayers()
+
+    def showFigures(self):
+        self.vocab()
+        self.showVisualDocument()
+        self.showHierarchicalDocument()
 
     def groupLayers(self):
         #iterate through groups to layer the plot
@@ -176,3 +177,35 @@ class Cluster():
 
         plt.tight_layout() #show plot with tight layout
         plt.show()
+
+    def tokenize_and_stem(self, text):
+        stemmer = SnowballStemmer("english")
+
+        # first tokenize by sentence, then by word to ensure that punctuation is caught as it's own token
+        tokens = [word for sent in nltk.sent_tokenize(text) for word in nltk.word_tokenize(sent)]
+        filtered_tokens = []
+        # filter out any tokens not containing letters (e.g., numeric tokens, raw punctuation)
+        for token in tokens:
+            if re.search('[a-zA-Z]', token):
+                filtered_tokens.append(token)
+        stems = [stemmer.stem(t) for t in filtered_tokens]
+        return stems
+
+    def tokenize_only(self, text):
+        # first tokenize by sentence, then by word to ensure that punctuation is caught as it's own token
+        tokens = [word.lower() for sent in nltk.sent_tokenize(text) for word in nltk.word_tokenize(sent)]
+        filtered_tokens = []
+        # filter out any tokens not containing letters (e.g., numeric tokens, raw punctuation)
+        for token in tokens:
+            if re.search('[a-zA-Z]', token):
+                filtered_tokens.append(token)
+        return filtered_tokens
+
+    def setClusters(self, num_clusters):
+        self.num_clusters = num_clusters
+    
+    def setContents(self, contents):
+        self.content = contents
+
+    def setTitles(self, titles):
+        self.titles = titles

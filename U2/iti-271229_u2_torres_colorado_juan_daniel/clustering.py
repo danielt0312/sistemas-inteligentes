@@ -128,7 +128,7 @@ print(clusters)
 #uncomment the below to save your model 
 #since I've already run my model I am loading from the pickle
 
-#joblib.dump(km,  'doc_cluster.pkl')
+# joblib.dump(km,  'doc_cluster.pkl')
 
 km = joblib.load('doc_cluster.pkl')
 clusters = km.labels_.tolist()

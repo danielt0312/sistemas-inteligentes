@@ -2,7 +2,7 @@ import os
 from PyQt6.QtWidgets import (QWidget, QPushButton, QFileDialog, QGridLayout, 
                              QMessageBox)
 from PyQt6.QtCore import pyqtSlot
-from pdf_filter import PDFLector
+from pdf_filter import PDFFilter
 
 """
 Clase para la interfaz visual y sus funciones
@@ -13,7 +13,7 @@ class Window(QWidget):
         super().__init__()
 
         # Seguimiento de los archivos PDF
-        self.lector = PDFLector()
+        self.lector = PDFFilter()
 
         # Conectar señales provinientes del filtro
         self.lector.errorSignal.connect(self.messageError)
@@ -72,6 +72,16 @@ class Window(QWidget):
     @pyqtSlot(str)
     # Mostrar advertencias o errores que se generan en el programa
     def messageError(self, causa):
+        return QMessageBox.warning(
+            self,
+            "Advertencia",
+            causa,
+            buttons = QMessageBox.StandardButton.Close,
+            defaultButton = QMessageBox.StandardButton.Close,
+        )
+    
+    # Mostrar procesos terminados/completados que se generan en el programa
+    def messageCorrect(self, causa):
         return QMessageBox.warning(
             self,
             "Advertencia",

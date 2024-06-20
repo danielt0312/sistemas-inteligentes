@@ -3,11 +3,12 @@ import subprocess  # para usar pdftotext y pdfinfo de poppler, sudo apt-get inst
 import shutil
 from PyQt6.QtCore import QObject, pyqtSignal
 from classifier import Classifier
+from cluster import Cluster
 
 """
 Clase para procesar los archivos PDF 
 """
-class PDFLector(QObject):
+class PDFFilter(QObject):
     errorSignal = pyqtSignal(str)  # Señal que emite una cadena (mensaje de error)
 
     # Constructor
@@ -72,14 +73,6 @@ class PDFLector(QObject):
             return False
         return True
 
-    # Validar si el directorio existe, sino, intentar crearlo y validar si se creó
-    def dirExists(self, directory):
-        return self.pathExists(directory) or self.createDir(directory)
-
-    # Validar si una dirección existe
-    def pathExists(self, directory):
-        return os.path.exists(directory)
-
     # Clasificar todos los archivos PDFs de la carpeta proporcionada
     def classifyFiles(self):
         if self.isValid() and self.validTrain():
@@ -94,9 +87,21 @@ class PDFLector(QObject):
                 self.classifyFile(self.directories[2], f)
             print('Clasificación terminada')
 
-            self.moveFiles(self.directories[0], self.directories[3], self.getNameFiles(self.files_en))
-            self.moveFiles(self.directories[0], self.directories[4], self.getNameFiles(self.files_es))
+            # self.moveFiles(self.directories[0], self.directories[3], self.getNameFiles(self.files_en))
+            # self.moveFiles(self.directories[0], self.directories[4], self.getNameFiles(self.files_es))
             # self.renameFiles()
+            self.clustering()
+
+    # Implementar las tecnicas de clustering
+    def clustering(self):
+        titles = self.getNameFiles(self.files_en)
+        content = []
+        
+        for f in self.files_en:
+            content.append((" ".join(self.cf.text2paragraphs(self.directories[2] + '/' + f)).replace('\n', ' ')))
+        
+        cl = Cluster(titles, content, 3)
+        cl.showFigures()
 
     # Clasificar un archivo si está en inglés o español
     def classifyFile(self, dir_path, f):
@@ -140,27 +145,6 @@ class PDFLector(QObject):
             return False
         return True
 
-    # Mostrar mensajes de advertencias y/o errores
-    def emitErrorSignal(self):
-        error_message = "\n".join(self.causes)  # Unir todas las causas en un mensaje de error
-        self.errorSignal.emit(error_message)  # Emitir la señal con el mensaje de error
-
-    # Listar los archivos de un directorio 
-    def listFiles(self, directory):
-        return os.listdir(directory)
-
-    # Filtrar los archivos de acuerdo a una extensión (default: pdf)
-    def filtFiles(self, files, extension='.pdf'):
-        return [fname for fname in files if fname.endswith(extension)]
-
-    # Devolver los nombres de los archivos
-    def getNameFiles(self, files):
-        return [os.path.splitext(fname)[0] for fname in files]
-
-    # Devolver causas
-    def getCauses(self):
-        return self.causes
-
     # Renombrar archivos según los metadatos
     def renameFiles(self):
         for name in self.getNameFiles(self.files_en):
@@ -193,3 +177,32 @@ class PDFLector(QObject):
             if line.startswith(field):
                 return line.split(':', 1)[1].strip()
         return ''
+    
+    # Mostrar mensajes de advertencias y/o errores
+    def emitErrorSignal(self):
+        error_message = "\n".join(self.causes)  # Unir todas las causas en un mensaje de error
+        self.errorSignal.emit(error_message)  # Emitir la señal con el mensaje de error
+
+    # Listar los archivos de un directorio 
+    def listFiles(self, directory):
+        return os.listdir(directory)
+
+    # Filtrar los archivos de acuerdo a una extensión (default: pdf)
+    def filtFiles(self, files, extension='.pdf'):
+        return [fname for fname in files if fname.endswith(extension)]
+
+    # Devolver los nombres de los archivos
+    def getNameFiles(self, files):
+        return [os.path.splitext(fname)[0] for fname in files]
+
+    # Devolver causas
+    def getCauses(self):
+        return self.causes
+
+    # Validar si el directorio existe, sino, intentar crearlo y validar si se creó
+    def dirExists(self, directory):
+        return self.pathExists(directory) or self.createDir(directory)
+
+    # Validar si una dirección existe
+    def pathExists(self, directory):
+        return os.path.exists(directory)

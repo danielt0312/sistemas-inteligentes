@@ -64,7 +64,7 @@ class Classifier():
         return label
 
     # Convertir un archivo TXT a un parrafo
-    def text2paragraphs(self, filename, min_size=1):
+    def text2paragraphs(self, filename, min_size=100):
         with open(filename, 'r', encoding='utf-8') as file:
             txt = file.read()
         paragraphs = [para for para in txt.split("\n\n") if len(para) > min_size]
