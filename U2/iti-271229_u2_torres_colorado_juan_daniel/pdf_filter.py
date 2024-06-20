@@ -106,7 +106,7 @@ class PDFFilter(QObject):
 
     # Implementar las tecnicas de clustering
     def clustering(self):
-        if self.isValid() and self.validTrain() and self.validEnFiles():
+        if self.validTrain() and self.validEnFiles():
             self.emitInfoSignal('La clusterización puede llevar tiempo en completarse. Se le hará saber cuando este proceso termine.')
             titles = self.getNameFiles(self.files_en)
             content = []
