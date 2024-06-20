@@ -100,8 +100,8 @@ class PDFFilter(QObject):
             print('Clasificación terminada')
             self.emitInfoSignal('La clasificación ha terminado.')
 
-            # self.moveFiles(self.directories[0], self.directories[3], self.getNameFiles(self.files_en))
-            # self.moveFiles(self.directories[0], self.directories[4], self.getNameFiles(self.files_es))
+            self.moveFiles(self.directories[0], self.directories[3], self.getNameFiles(self.files_en))
+            self.moveFiles(self.directories[0], self.directories[4], self.getNameFiles(self.files_es))
             # self.renameFiles()
 
     # Implementar las tecnicas de clustering
@@ -144,11 +144,13 @@ class PDFFilter(QObject):
     # Convertir archivos
     def convertFiles(self):
         if self.isValid():
+            self.emitInfoSignal('La conversión de archivos PDF a TXT puede llevar tiempo en completarse. Se le hará saber cuando este proceso termine.')
             print('Iniciando conversión de archivos PDF a TXT, esto puede llevar tiempo...')
             for name in self.pdf_files:
                 if not self.pdfToTxt(self.directories[0] + '/' + name + '.pdf', self.directories[2] + '/' + name + '.txt', name):
                     print(self.causes[-1])
             print('Conversión terminada.')
+            self.emitInfoSignal('La conversión ha terminado.')
 
     # Conversión de PDF a TXT
     def pdfToTxt(self, pdf_path, txt_path, fname):

@@ -29,11 +29,11 @@ class Window(QWidget):
         self.setLayout(content)
 
         # Boton para seleccionar directorio
-        btnSelectDir = QPushButton('Seleccionar carpeta')
+        btnSelectDir = QPushButton('Seleccionar directorio de PDFs')
         btnSelectDir.clicked.connect(self.loadFile)
 
         # Botón para convertir archivos
-        btnConvertFiles = QPushButton('Convertir archivos')
+        btnConvertFiles = QPushButton('Convertir archivos PDFs a TXTs')
         btnConvertFiles.clicked.connect(self.lector.convertFiles)
 
         # Botón para clasificar
@@ -59,7 +59,7 @@ class Window(QWidget):
 
         # Estilo de la ventana
         self.resize(720,540)
-        self.setWindowTitle('Filtrar documentos en Inglés y Español')
+        self.setWindowTitle('Filtración de documentos en Inglés y Español')
 
     # Leer archivo ARFF
     def loadFile(self):
