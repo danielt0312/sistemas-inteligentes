@@ -30,22 +30,22 @@ class Cluster():
         return word_freq_sorted
     
     def vocab(self):
-        # not super pythonic, no, not at all.
-        # use extend so it's a big flat list of vocab
-        totalvocab_stemmed = []
-        totalvocab_tokenized = []
-        for i in self.content:
-            allwords_stemmed = self.tokenize_and_stem(i)  # for each item in 'content', tokenize/stem
-            totalvocab_stemmed.extend(allwords_stemmed)  # extend the 'totalvocab_stemmed' list
+        totalvocab_stemmed = []  # Lista de palabras agrupadas
+        totalvocab_tokenized = []  # Lista de palabras tokenizadas
 
-            allwords_tokenized = self.tokenize_only(i)
-            totalvocab_tokenized.extend(allwords_tokenized)
+        for title in self.titles:
+            words = title.split()
+            totalvocab_stemmed.extend(words)
+            totalvocab_tokenized.extend(words)
 
-        # Remove short words from vocab_frame
+        # Asegúrate de que ambas listas tengan la misma longitud
+        min_length = min(len(totalvocab_stemmed), len(totalvocab_tokenized))
+        totalvocab_stemmed = totalvocab_stemmed[:min_length]
+        totalvocab_tokenized = totalvocab_tokenized[:min_length]
+
         vocab_frame_data = {'words': totalvocab_tokenized}
         self.vocab_frame = pd.DataFrame(vocab_frame_data, index=totalvocab_stemmed)
-        self.vocab_frame = self.vocab_frame[self.vocab_frame['words'].apply(lambda x: len(x) > 2)]
-        
+        print('Vocabulary frame created successfully.')
         self.vectorizer()
 
     def vectorizer(self):
@@ -54,7 +54,7 @@ class Cluster():
                                         min_df=0.02, stop_words='english',
                                         use_idf=True,tokenizer=self.tokenize_and_stem, ngram_range=(1,3))
 
-        self.tfidf_matrix = tfidf_vectorizer.fit_transform(self.content) #fit the vectorizer to synopses
+        self.tfidf_matrix = tfidf_vectorizer.fit_transform(self.content) #fit the vectorizer to content
 
         self.terms = tfidf_vectorizer.get_feature_names_out()
         self.dist = 1 - cosine_similarity(self.tfidf_matrix)

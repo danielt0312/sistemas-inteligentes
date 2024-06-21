@@ -49,7 +49,7 @@ class Classifier():
     def classify(self, dir_file, fname):
         paragraphs = self.text2paragraphs(dir_file)
         if not paragraphs:
-            print(f"No valid paragraphs in file: {dir_file}")
+            print(f"No se encontraron párrafos válidos en: '{dir_file}'")
             return
 
         word_counts = {label: 0 for label in self.labels}

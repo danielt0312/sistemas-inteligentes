@@ -86,7 +86,7 @@ class PDFFilter(QObject):
 
     # Clasificar todos los archivos PDFs de la carpeta proporcionada
     def classifyFiles(self):
-        if self.isValid() and self.validTrain():
+        if self.validTrain():
             dir_train = self.directories[5] + '/'
 
             self.files_en.clear()
@@ -97,17 +97,20 @@ class PDFFilter(QObject):
             self.cf = Classifier(dir_train, self.listFiles(dir_train))
             for f in self.listFiles(self.directories[2]):
                 self.classifyFile(self.directories[2], f)
-            print('Clasificación terminada')
-            self.emitInfoSignal('La clasificación ha terminado.')
 
             self.moveFiles(self.directories[0], self.directories[3], self.getNameFiles(self.files_en))
             self.moveFiles(self.directories[0], self.directories[4], self.getNameFiles(self.files_es))
+
+            print('Clasificación terminada')
+            self.emitInfoSignal('La clasificación ha terminado.')
             # self.renameFiles()
 
     # Implementar las tecnicas de clustering
     def clustering(self):
         if self.validTrain() and self.validEnFiles():
             self.emitInfoSignal('La clusterización puede llevar tiempo en completarse. Se le hará saber cuando este proceso termine.')
+            print('Iniciando proceso de clusterizacion, esto puede llevar tiempo...')
+        
             titles = self.getNameFiles(self.files_en)
             content = []
             
@@ -116,6 +119,7 @@ class PDFFilter(QObject):
             
             cl = Cluster(titles, content, 3)
             cl.showFigures()
+            print('Clasificación terminada')
             self.emitInfoSignal('La clusterización ha terminado.')
 
     # Clasificar un archivo si está en inglés o español
