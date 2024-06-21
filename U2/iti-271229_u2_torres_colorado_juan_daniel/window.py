@@ -13,7 +13,7 @@ class Window(QWidget):
         super().__init__()
 
         # Seguimiento de los archivos PDF
-        self.lector = PDFFilter('/home/daniel/Descargas/000_ArticulosAgrupar')
+        self.lector = PDFFilter()
 
         # Conectar señales provinientes del filtro
         self.lector.errorSignal.connect(self.messageError)
