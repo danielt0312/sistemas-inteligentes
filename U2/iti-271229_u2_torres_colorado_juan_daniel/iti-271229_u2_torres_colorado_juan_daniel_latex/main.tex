@@ -1,0 +1,267 @@
+%%
+% La siguiente plantilla esta basada en el siguiente enlace:
+% http://academic.reed.edu/physics/courses/Physics332.s08/reports.html
+% La plantilla original puede descargarse de ese sitio
+% Se dejo parte del texto original en inglés para ilustar el uso de la plantilla
+% Se hicieron algunas modificaciones para ajustar el idioma y otros detalles para 
+% completar un reporte técnico breve pero muy puntual
+% Modificación Inicial: Marco Aurelio Nuno Maganda - 11/SEP/2014
+% 
+% Enlace a la documentación del tipo de documento base (revtex4)
+% http://mirror.hmc.edu/ctan/macros/latex/contrib/revtex/doc/latex/revtex/source/revtex4-1.pdf
+%
+% En algunas distribuciones es necesario instalar el paquete texlive-publishers
+%
+%\documentclass[letterpaper,aps,twocolumn,pre,nofootinbib]{revtex4}
+%\documentclass[twocolumn]{article}
+\documentclass[conference]{IEEEtran}
+
+\usepackage[spanish]{babel}
+\usepackage{amsmath,amssymb,amsfonts,amsthm}
+\usepackage{graphicx}
+%\usepackage{bbm}
+\usepackage[utf8]{inputenc} % Caracteres en Español (Acentos, ñs)
+\usepackage{url} % ACENTOS
+\usepackage{hyperref} % Referencias
+\usepackage{subfig}
+\usepackage{lipsum}
+\usepackage{balance}
+\usepackage{caption}
+
+
+
+\usepackage{graphicx} % Required for including images
+\usepackage[font=small,labelfont=bf]{caption} % Required for specifying captions to tables and figures
+
+
+\usepackage{tikz}
+\usetikzlibrary{automata, positioning, arrows}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% PARCHE PARA ELIMINAR LA FECHA DEL DOCUMENTO
+% 
+\usepackage{etoolbox}
+\makeatletter
+% \frontmatter@RRAP@format is responsible for the parentheses
+\patchcmd{\frontmatter@RRAP@format}{(}{}{}{}
+\patchcmd{\frontmatter@RRAP@format}{)}{}{}{}
+%\renewcommand\Dated@name{}
+\makeatother	
+% FIN DEL PARCHE
+% 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% PARCHE PARA PERMIRIR UTILIZAR BIBLATEX EN ESTA PANTLLA
+%\PassOptionsToPackage{square,numbers}{natbib}
+%\RequirePackage{natbib}  
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\usepackage[backend=bibtex,sorting=none]{biblatex}
+% Estas lineas permiten romper los hipervinculos muy largos !!!!
+\setcounter{biburllcpenalty}{7000}
+\setcounter{biburlucpenalty}{8000}
+\addbibresource{references.bib}
+
+% Actualiza en automático la fecha de las citas de internet a la fecha de la compilación del documento
+\usepackage{datetime}
+\newdateformat{specialdate}{\twodigit{\THEDAY}-\twodigit{\THEMONTH}-\THEYEAR}
+\date{\specialdate\today}
+
+% la sentencia \burl en las citas... 
+\usepackage[hyphenbreaks]{breakurl}
+
+\renewcommand\spanishtablename{Tabla}
+\renewcommand\spanishfigurename{Figura}
+
+
+
+\begin{document}
+
+\newcommand{\breite}{0.9} %  for twocolumn
+\newcommand{\RelacionFiguradoscolumnas}{0.9}
+\newcommand{\RelacionFiguradoscolumnasPuntoCinco}{0.45}
+
+
+
+\title{Reporte de Proyecto Grupal 2\\Acciones con carpeta de One Drive << 000\_ArticulosAgrupar >>}
+
+\author{\IEEEauthorblockN{Moreno Ledesma Ximena Abigail\IEEEauthorrefmark{1}, Parras Pecina Maria Fernanda\IEEEauthorrefmark{1} y 
+Torres Colorado Juan Daniel\IEEEauthorrefmark{1}}
+\IEEEauthorblockA{Ingeniería en Tecnologías de la Información\\
+Universidad Politécnica de Victoria}
+}
+\maketitle
+
+\begin{abstract} 
+\textbf{En el presente informe se detalla el desarrollo de una interfaz gráfica diseñada para realizar tres tareas específicas. \textit{La interfaz permite filtrar los documentos y organizarlos en carpetas separadas según su idioma, clasificando los documentos en español y en inglés, esto es logrado cuando se haya entrenado correctamente el clasificador. Finalmente, la interfaz incluye herramientas para aplicar técnicas de clusterización a los documentos en inglés para agrupar los documentos en función de la similitud de su contenido.}}
+\end{abstract}
+
+\section{Introducción}
+El objetivo de este proyecto es desarrollar una interfaz gráfica de usuario (GUI) que facilite la gestión y análisis de documentos PDF en Google Drive. Su importancia radica en automatizar y optimizar tareas que normalmente consumen mucho tiempo, como la clasificación de documentos por idioma y la aplicación de técnicas de clusterización para agrupar los documentos en inglés, mejorando la eficiencia en la organización y análisis de grandes volúmenes de documentos PDF.
+
+La GUI es una interfaz entre la persona y la máquina. El objetivo de esta interfaz gráfica es representar el código del backend de un sistema de la forma más clara posible para el usuario para simplificarle las tareas diarias. Para esto, son muy importantes los iconos y las imágenes, ya que solo estos permiten una aplicación universal e independiente del texto. \cite{gui}
+
+Un Dataset, como su nombre lo dice, es simplemente un conjunto de datos, ordenado bajo un sistema de almacenamiento que otorga los lineamientos principales de búsqueda o directorio de la información que se quiere trabajar. Este conjunto de datos por supuesto que se puede utilizar para muchas cosas, dependiendo de la metodología, orientación o tratamiento que se le quiera dar a la información. Su finalidad es hacer mucho más fácil la vida a las personas, automatizar tareas o simplemente analizar información de una manera más ágil. \cite{dataSet}
+
+Este informe detalla el proceso de desarrollo de una interfáz gráfica y sistema con el objetivo de manejar tres funciones principales con un dataset: Filtrar los documentos en documentos en los idiomas de español e inglés, finalmente solo para los documentos en inglés, aplicar técnicas de clusterización. Esto con ayuda de PyQt, una libreria de Python para crear aplicaciones GUI utilizando el kit de herramientas Qt, y la versión más reciente siendo PyQt6 \cite{PyQt6} lanzada en el año 2021. Se abordarán conceptos relacionados con \textit{Natural Language Processing: Classification}, conversión de documentos PDF a TXT, técnicas de clusterización para el procesamiento, almacenamiento de datos, específicamente documentos de formato PDF, utilizando tecnologías de almacenamiento en la nube como OneDrive. \cite{OneDrive}
+
+La librería PyQt de Python se utiliza para escribir todo tipo de aplicaciones GUI, desde herramientas de visualización utilizadas por científicos e ingenieros, hasta aplicaciones contables.\cite{PyQt} En este caso se hizo uso de la versión PyQt6.
+
+Natural Language Processing (NLP) o  Procesamiento del lenguaje natural (PNL) es una rama de la inteligencia artificial (IA) que permite a las computadoras comprender, generar y manipular el lenguaje humano. El procesamiento del lenguaje natural tiene la capacidad de interrogar los datos con texto o voz en lenguaje natural.\cite{nlp}
+
+Las stopwords son palabras comunes que suelen eliminarse de los textos antes de realizar análisis, ya que no aportan mucho significado (\textit{the, and, is}), mejorando la eficiencia y precisión del análisis eliminando ruido.\cite{stopW}
+
+Tokenization consiste en dividir el texto en unidades menores como palabras, frases o párrafos. Es el primer paso en muchos procesos de NLP, facilitando la manipulación y análisis del texto.
+
+La clusterización, también conocida como agrupamiento o clustering, es una técnica de análisis de datos que consiste en dividir un conjunto de datos en grupos (o clusters) de tal manera que los datos dentro de un mismo grupo sean más similares entre sí que con los datos de otros grupos. 
+
+\textbf{Técnicas de clusterización}
+\begin{itemize}
+    \item \textit{Tf-idf} and \textit{Document Similarity}. TF-IDF (Term Frequency-Inverse Document Frequency) es una técnica de vectorización que transforma los textos en vectores numéricos. Calcula la importancia de una palabra en un documento en relación con un corpus de documentos. Ayuda a identificar las palabras más relevantes para cada documento, mejorando el análisis de similitud entre documentos.
+    \item \textit{K\-means Clustering}. K\-means es un algoritmo de particionamiento que agrupa los documentos en k clusters basándose en sus características vectoriales. Agrupa documentos similares en clusters, facilitando la organización y análisis temático.
+    \item \textit{Multidimensional Scaling (MDS)}. Es una técnica de reducción de dimensionalidad que proyecta datos de alta dimensión en un espacio de menor dimensión, preservando las distancias entre puntos. Facilita la visualización de la estructura de los datos, especialmente útil para visualizar clusters.
+    \item \textit{Visualizing Document Clusters}. Implica usar técnicas de visualización como t-SNE o PCA para representar gráficamente los clusters de documentos. Ayuda a entender la estructura y separación de los clusters, facilitando la interpretación de los resultados.
+    \item \textit{Hierarchical Document Clustering}. Construye un árbol jerárquico (dendrograma) que agrupa documentos en múltiples niveles de granularidad. Útil para explorar la estructura jerárquica de los datos y determinar el número óptimo de clusters.
+    \item \textit{Latent Dirichlet Allocation} (LDA). Es una técnica de modelado de temas que identifica temas subyacentes en un corpus de documentos y asigna probabilidades de pertenencia a estos temas para cada documento. Facilita la identificación de temas y la organización de documentos en función de sus temas principales.\cite{clustering}
+\end{itemize} 
+
+\section{Desarrollo Experimental}
+Antes de entrar con detalle a las funcionalidades clave del proyecto, cabe aclarar que el procesamiento de la información se llevó a cabo gracias al uso de la utilidad \textit{pdftotext} \cite{pdftotext} de la librería \textit{popper-utils}, la cuál convierte archivos en formato de documento portátil (PDF) en texto sin formato. Además, es necesaria la instalación de librerías como \textit{nltk} y \textit{joblib} para su proceso de clusterización de documentos en inglés, y para su representación visual la instalación de librerias como \textit{numpy}, \textit{matplotlib}, \textit{pandas}, \textit{scipy} y \textit{sklearn}. Caso contrario, la ejecución de este programa no podrá suceder debido a los anteriores factores. Por último, se decidió descartar la idea del renombramiento de documentos con la sintaxis \textit{[Journal]\_Titulo.pdf}, esto debido a que, si bien es cierto que se pueden acceder a la lectura de metadatos de los documentos PDFs, cada autor de cada documento puede o no puede haber colocado dicha información en las mismas secciones, causando que para cada documento se puede colocar esta información en secciones diferentes y no tener una certeza asegurada; dicho proceso fue implementado pero al final se decidió optar por no realizar este procedimiento debido a razones anteriormente mencionadas.
+
+Se llevaron a cabo distintos procedimientos para lograr cumplir con el objetivo del proyecto. Dichos procedimientos serán mencionadas a continuación.
+
+\subsection{Funcionalidades Clave}
+\textbf{Filtrado de Documentos por Idioma:}
+\begin{itemize}
+    \item Separación automática de documentos en español e inglés.
+    \item Manejo de documentos con resúmenes y contenidos en distintos idiomas.
+\end{itemize}
+
+\textbf{Clusterización de Documentos en Inglés:}
+\begin{itemize}
+    \item Aplicación de técnicas de NLP y clusterización para agrupar documentos por temas o contenido similar.
+    \item Visualización de agrupamientos.
+\end{itemize}
+
+\subsection{Filtrado de Documentos por Idioma}
+En esta sección se describe el proceso de filtrado automático de documentos en español e inglés. A continuación, se detallan los pasos y consideraciones clave:
+
+\subsubsection{Identificación del Idioma}
+Para identificar el idioma de un documento, se logra mediante el proceso de clustering y el análisis de las palabras más frecuentes en los documentos agrupados. Al agrupar los documentos en clusters basados en la similitud de su contenido, los documentos en el mismo idioma tienden a agruparse juntos, debido a la similitud lingüística y de vocabulario entre ellos. El proceso implica:
+
+\begin{enumerate}
+    \item \textbf{Vectorización del Contenido}: Los contenidos de los documentos se convierten en vectores TF-IDF,  permitiendo capturar las características importantes del texto.
+    \item  \textbf{Clustering con K-Means}: Se aplica el algoritmo de K-Means para agrupar los documentos. Los documentos con contenido similar, es decir, con un vocabulario similar, se agrupan juntos.
+    \item \textbf{Análisis de Términos Principales}: Se examinan los términos más representativos en cada cluster. Esto revela los patrones lingüísticos predominantes en cada grupo, permitiendo inferir el idioma.
+\end{enumerate}
+
+Estas técnicas permiten una clasificación precisa y eficaz de documentos bilingües, asegurando que sean correctamente identificados y gestionados según el idioma predominante.
+
+\subsection{Clusterización de Documentos en Inglés}
+
+\subsubsection{Descripción de las Técnicas}
+Las técnicas de clusterización de documentos permiten agrupar textos similares en conjuntos coherentes, facilitando la organización y el análisis de grandes volúmenes de información. Según el enlace proporcionado en http://brandonrose.org/clustering, se destacan varias técnicas comunes:
+
+\begin{itemize}
+    \item \textbf{K-means}: Un algoritmo de agrupamiento que asigna puntos de datos a clusters para minimizar la varianza dentro de cada cluster.
+    \item \textbf{Clustering Jerárquico}: Organiza los datos en una estructura de árbol o jerarquía, donde los clusters se forman fusionando o dividiendo clusters sucesivamente.
+    \item \textbf{Clustering Espectral}: Utiliza la matriz de afinidad de los datos para proyectarlos en un espacio de menor dimensión, donde los clusters se identifican como particiones de la matriz.
+\end{itemize}
+
+\subsubsection{Aplicación específica a los documentos en inglés}
+Para documentos en inglés, estas técnicas se aplican utilizando herramientas de Procesamiento de Lenguaje Natural (NLP) que procesan el texto para representarlo en un espacio vectorial donde se pueden aplicar algoritmos de clusterización. Esto permite identificar temas comunes, categorías o similitudes semánticas entre los documentos.
+
+\subsubsection{Implementación del Algoritmo}
+La implementación de estos algoritmos implica los siguientes pasos:
+\begin{enumerate}
+    \item \textbf{Preprocesamiento de Texto}: Normalización del texto, eliminación de stopwords, lematización o derivación de palabras.
+    \item \textbf{Representación Vectorial}: Convertir el texto preprocesado en vectores numéricos \cite{ProcesamientodeTXT}.
+    \item \textbf{Aplicación de Clustering}: Utilizar algoritmos como K-means o Clustering Jerárquico sobre los vectores para agrupar los documentos en clusters significativos.
+\end{enumerate}
+
+Estas técnicas y herramientas permiten una clusterización eficaz de documentos en inglés, facilitando la exploración y comprensión de grandes conjuntos de datos textuales.
+
+\section{Resultados}
+Los resultados de este proyecto resultan en el filtrado de documentos en español y en inglés en carpetas separadas y la aplicación de clusterización anteriormente mencionadas para documentos en inglés. En la figura \ref{fig:interfaz} demuestra la ventana inicial contando con los elementos:
+
+\begin{itemize}
+    \item \textbf{Seleccionar directorio de PDFs}: Tiene la funcionalidad de demostrar una ventana emergente con la capacidad de seleccionar un directorio específico en la cual será usada para realizar el objetivo de este proyecto. Además, si el directorio es válido, entonces se procederá automáticamente a crear 4 carpetas para llevar una clasificación organizada, en la cuál, dentro del directorio proporcionado se creará una carpeta de nombre "documentos" y en ella 3 carpetas para organizar de manera precisa, ''analysis'' usada para almacenar documentos de texto legible, ''Inglés'' y ''Español'' que clasifican dichos PDFs.
+    \item \textbf{Convertir archivos PDFs a TXTs}: Reliza el procedimiento de convertir los archivos PDFs del directorio proporcionado a TXT en la carpeta ''analysis'', esto con la finalidad de que el contenido sea legible y sea manipulado.
+    \item \textbf{Clasificar documentos}: Una vez convertido los archivos PDFs a TXTs, se realizará la clasificación de documentos en inglés y en español a través de su contenido y los documentos identificados serán transladados a su carpeta correspondiente.
+    \item \textbf{Realizar clustering}: Por último, una vez clasificado los documentos, entonces se podrá realizar la aplicación de clustering de documentos en inglés, que posteriormente los resultados serán visualizados en pantalla.
+\end{itemize}
+
+Para cada procedimiento anterior, se realizó la notificación mensajes de advertencias \ref{fig:msg_adv} que se pueden producir durante el programa  de mensajes al igual de informativos \ref{fig:msg_info} (\textit{e.g.}, la advertencia del congelamiento del programa \ref{fig:msg_noresp}).
+
+\begin{figure}
+    \centering
+    \includegraphics[width=0.9\linewidth]{img/interfaz.png}
+    \caption{Interfaz de funcionalidades del sistema.}
+    \label{fig:interfaz}
+\end{figure}
+
+En la figura \ref{fig:select_dir} se representa la ventana en la que, gracias a la clase \textit{QFileDialog} de la librería de \textit{PyQt6}, permite que la selección del directorio se proporcione de una manera más fácil y sencilla de obtener.
+\begin{figure}
+    \centering
+    \includegraphics[width=1\linewidth]{img/selecArchivos.png}
+    \caption{Selección del directorio que contiene los documentos}
+    \label{fig:select_dir}
+\end{figure}
+
+Una vez terminado el proceso de la clasificación, se moverán los documentos PDF hacia cada grupo (inglés o español) \ref{fig:clas}, exceptuando por los documentos que no cuenten con un mínimo de 100 palabras. Debido a la cantidad grande de documentos, se optó por solo demostrar una vista general.
+\begin{figure}
+    \centering
+    \includegraphics[width=0.9\linewidth]{img/clasificacion.png}
+    \caption{Resultado de clasificación}
+    \label{fig:clas}
+\end{figure}
+
+En las figuras \ref{fig:clustering1} y \ref{fig:clustering2} se representa la visualización del resultado de la clusterización, mostrando las categorización obtenida para cada documento.
+\begin{figure}
+    \centering
+    \subfloat[Visualización completa]{\includegraphics[width=0.9\linewidth]{img/clustering1.png}} \\
+    \subfloat[Acercamiento de la visualización]{\includegraphics[width=0.9\linewidth]{img/clustering1zoom.png}} 
+    \caption{Visualizacíon de la cluterización, mostrando en que categoría se encuentran}
+    \label{fig:clustering1}
+
+    \vspace{0.6cm}
+    \subfloat[Visualización completa]{\includegraphics[width=0.9\linewidth]{img/clustering2.png}} \\
+    \subfloat[Acercamiento de la visualización]{\includegraphics[width=0.9\linewidth]{img/clustering2zoom.png}} 
+    \caption{Visualizacíon de la cluterización jerárquico}
+    \label{fig:clustering2}
+\end{figure}
+
+\section{Conclusión}
+
+En este proyecto se ha desarrollado una interfaz gráfica de usuario (GUI) que facilita la gestión y análisis de documentos PDF almacenados en Google Drive. La herramienta implementa varias funcionalidades clave que optimizan tareas comunes y mejoran la eficiencia en la organización de grandes cantidades de documentos. Se tomaron como objetivo tres funciones: Primero, se la implementación de un filtrado automático que clasifica los documentos por idioma, separando los documentos en español y en inglés. En segundo lugar, un método para acceder y extraer metadatos de los documentos, permitiendo renombrar los archivos según una sintaxis específica que incluye el nombre del journal y el título del documento. Esto no solo facilita la identificación y búsqueda de documentos, sino que también estandariza su nomenclatura para una mejor gestión. Finalmente, se han aplicado técnicas avanzadas de clusterización a los documentos en inglés, proporcionando una visión clara de la estructura y los temas predominantes en el conjunto de datos.
+
+La implementación de estas funcionalidades con la ayuda de PyQt6 y diversas librerias de procesamiento de lenguaje natural (NLP) y machine learning demuestra la versatilidad de las herramientas de software para la automatización y análisis de datos.
+
+\printbibliography
+
+\clearpage
+\begin{figure*}
+    \section{Anexos}
+    \centering
+
+    \subfloat[Sin documentos PDFs encontrados]{\includegraphics[width=0.4\linewidth]{img/adv_nopdf.png}} \hspace{0.3cm}
+    \subfloat[Directorio proporcionado incorrectamente]{\includegraphics[width=0.33\linewidth]{img/adv_nodir.png}} 
+    \caption{Mensajes de advertencia}
+    \label{fig:msg_adv}
+
+    \vspace{0.35cm}
+    \subfloat[Tiempo de conversión]{\includegraphics[width=0.4\linewidth]{img/ConversionTime.png}} \hspace{0.3cm}
+    \subfloat[Tiempo de clasificación]{\includegraphics[width=0.4\linewidth]{img/clasificTime.png}} \\
+    \subfloat[Tiempo de clusterización]{\includegraphics[width=0.4\linewidth]{img/clusteringTime.png}}
+    \caption{Mensajes informativos}
+    \label{fig:msg_info}
+
+    \vspace{0.35cm}
+    \includegraphics[width=0.45\linewidth]{img/py3NoResp.png}
+    \caption{Congelamiento de programa}
+    \label{fig:msg_noresp}
+\end{figure*}
+
+
+\end{document}

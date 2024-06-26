@@ -1,0 +1,636 @@
+Abstraction & Application 29 (2020) 60 – 73
+
+UADY
+
+Sistema de recomendación híbrido conversacional para restaurantes
+Hybrid conversational recommendation system for restaurants
+Alejandro Ramírez Ramos, María Luisa Cervantes Piedras, Karina González Herrera,
+José Crispín Hernández Hernández, Edmundo Bonilla Huerta,
+Maestría en sistemas Computacionales, Tecnológico Nacional de México/I.T Apizaco
+m10370742@apizaco.tecnm.mx, m97370533@apizaco.tecnm.mx,
+m12370694@apizaco.tecnm.mx, crispin.hh@apizaco.tecnm.mx, edmundo.bh@apizaco.tecnm.mx
+
+Abstract
+Providing accurate restaurant information to make a decision on where to eat is becoming
+increasingly difficult as the amount of information and the number of options increases. This article
+proposes a system based on the integration of a conversational system (chatbot), a system based
+on geographical location and two personalized recommendation systems (with data on frequent
+promotions and tastes). The system treats the selection of restaurants of interest as an interactive
+and conversational process, with the recommendation systems investigating the attributes of the
+restaurants and responding to the user. It was tested on a sample of 100 real users. The
+experimental results show the benefits of the proposed system, as well as its relevance.
+
+Resumen
+Brindar información acertada de restaurantes para tomar una decisión de donde ir a comer, es cada
+vez más difícil a medida que aumenta la cantidad de información y el número de opciones. En este
+artículo se propone un sistema basado en la integración de un sistema conversacional (chatbot), un
+sistema basado en ubicación geográfica y dos sistemas de recomendación personalizados (con datos
+de promociones y gustos frecuentes). El sistema trata la selección de restaurantes de interés como
+un proceso interactivo y conversacional, con los sistemas de recomendación indagando sobre los
+atributos de los restaurantes y respondiendo al usuario. Se probó en una muestra de 100 usuarios.
+Los resultados experimentales muestran los beneficios del sistema propuesto, así como su
+relevancia.
+_____________________
+Keywords and phrases: Sistema Conversacional, Sistemas de recomendación, Inteligencia Artificial.
+2020 Mathematics Subject Classification: 68N01
+
+_____________________
+Fecha de recepción: septiembre 1, 2020 / Fecha de aceptación: octubre 5, 2020
+
+60
+
+A. Ramírez et al. / Abstraction & Application 29 (2020) 60 - 73
+
+61
+
+1 Introducción
+Las recomendaciones juegan un papel importante en la vida diaria. La mayoría de la gente todavía
+toma su decisión de una compra basado en las acciones de otros, generalmente toman información
+de sus experiencias. Antes de comprar un producto en línea, se predisponen a verificar los
+comentarios de otros clientes que ya han comprado un producto similar. Cuando quieren ir a un
+restaurante o lugar, frecuentemente se pide a los amigos que den consejos y se toman en cuenta
+sus opiniones [1].
+Los datos disponibles en Internet siguen creciendo exponencialmente y la necesidad de extraer
+información útil es primordial. Los sistemas de recomendación (RS) proporcionan a los clientes fácil
+acceso a información de productos / servicios. Los RS ya existentes ayudan a los consumidores a
+seleccionar productos que probablemente les gustarán o podrían comprar en función de analizar y
+descubrir los patrones de comportamiento de otros clientes [2]. Amazon utiliza diferentes técnicas
+de RS para recomendar nuevos productos a sus clientes. Facebook, Twitter y LinkedIn utilizan
+técnicas de RS para sugerir personas afines a contactar. TripAdvisor es otra compañía que aprovecha
+los sistemas de recomendación para dar consejos sobre una amplia variedad de opciones de viaje
+en todo el mundo, y Eharmony, ayuda a unir a las personas. De este modo, no solo ayudan a los
+usuarios en situaciones de sobrecarga de información, sino que también pueden contribuir
+significativamente al éxito empresarial de impulsar los proveedores de servicios y las ventas de
+comercio electrónico basadas en el historial de navegación, búsquedas, compras y preferencias de
+los usuarios [3]. Actualmente, los sistemas de recomendación se encuentran entre los campos de
+investigación de mayor éxito de la Inteligencia Artificial en la práctica.
+Los Sistemas conversacionales (Chatbots) incorporan sistemas de inteligencia artificial. Se
+caracterizan por la posibilidad de aprender sobre las experiencias, eventos, registros, y situaciones
+con el paso del tiempo. Los Sistemas de recomendación conversacional (CRS) admiten un diálogo
+orientado a tareas y de múltiples retroalimentaciones con los usuarios [4]. Durante dicho diálogo,
+el sistema puede, por ejemplo, obtener las referencias detalladas y actuales del usuario,
+proporcionar explicaciones para las sugerencias de elementos o procesar comentarios de los
+usuarios sobre las sugerencias hechas. Los CRS basados en Procesamiento de Lenguaje Natural
+(PNL), sufrieron durante mucho tiempo las limitaciones existentes, principalmente, en el contexto
+del procesamiento de comandos de voz. En los últimos años, sin embargo, se hicieron grandes
+avances en la tecnología del lenguaje. Hoy, los teléfonos inteligentes y los asistentes domésticos
+digitales son ampliamente usados por la inclusión de comandos de voz con alta precisión [5]. Estos
+dispositivos cuentan con sistemas conversacionales para el reconocimiento de los comandos. Alexa,
+Siri y Cortana son sistemas conversacionales robustos que se basan más en la tecnología de
+aprendizaje automático, en lugar de seguir rutas de diálogo predefinidas [6].
+
+62
+
+Sistema de recomendación híbrido conversacional para restaurantes
+
+2 Trabajos relacionados
+Desde hace varios años ya existen bibliotecas, paquetes y software para la construcción de sistemas
+de recomendación. A continuación, se describen sus características de algunos de ellos.
+
+Herramientas de Software
+Apache Mahout permite construir aplicaciones con implementaciones gratuitas de algoritmos de
+aprendizaje basados en máquinas distribuidas, o de otra manera escalable centrada básicamente
+en áreas de filtrado colaborativo, clustering y clasificación, aprovechando a menudo, y no
+limitándose a la plataforma Hadoop [7][8]. Los principales algoritmos de Sistemas de
+recomendación implementados en Mahout son los siguientes: Filtro colaborativo basado en
+contenido, Filtro colaborativo basado en objeto, por factorización de matrices como ALS-WR
+(Alternating Least Squares with Weighted-lambda-Regulations) y SVD (Descomposición de valores
+singulares, o Singular Value Decomposition en inglés) [9].
+La biblioteca LibRec 2.0 define un conjunto de recomendadores abstractos que pueden ampliarse e
+implementarse mediante algoritmos de recomendación específicos [10]. Se implementan cinco
+recomendadores genéricos [11]. El Recomendador general define la estructura base y algunos otros
+algoritmos como SlopeOne. Iterative Recommender define un recomendador basado en técnicas
+de aprendizaje iterativo. También están los enfoques basados en la factorización matricial (SVD++,
+BiasedMF). GraphicRecommender incluye a los algoritmos basados en modelos gráficos
+probabilísticos (LDA, BUCM). SocialRecommender define un recomendador que incorpora
+información social, como SocialMF y TrustSVD. Por último, ContextRecommender define un
+recomendador que integra información contextual adicional en recomendaciones (información
+temporal, TimeSVD) [12].
+TensorRec es un sistema de recomendación de Python que permite desarrollar rápidamente
+algoritmos de recomendación y personalizarlos con TensorFlow [13]. Un sistema de recomendación
+TensorRec consume tres datos de entrada: características del usuario, características del elemento
+e interacciones. Según las características del usuario / elemento, el sistema predecirá qué elementos
+recomendar. Las interacciones se utilizan cuando se ajusta el modelo: las predicciones se comparan
+con las interacciones y se calcula una pérdida / penalización, que el sistema aprende a disminuir
+[14].
+Surprise (Motor de sistema de recomendación simple de Python) es un paquete de Python que
+construye y analiza sistemas de recomendación que manejan datos de calificación explícitos [15].
+Facilita el manejo del conjunto de datos, por lo que los usuarios pueden usar conjuntos de datos
+integrados (Movielens, Jester) y sus propios conjuntos de datos personalizados. Incluye varios
+algoritmos de predicción, como algoritmos de línea de base, métodos de vecindad, basados en
+factorización de matriz (SVD, PMF, SVD++, NMF). Además, se incluyen varias medidas de similitud
+(Coseno, MSD, Pearson, y otros más). Facilita la implementación de nuevas ideas de algoritmos.
+También, proporcionar herramientas para evaluar, analizar y comparar el rendimiento de los
+algoritmos. Finalmente, Surprice no admite calificaciones implícitas o información basada en
+contenido [16].
+
+A. Ramírez et al. / Abstraction & Application 29 (2020) 60 - 73
+
+63
+
+Cabe mencionar que hay mucho mas de estos softwares, paquetes y bibliotecas [17][18][19]. Para
+saber cuál se adapta mejor a las necesidades de cada proyecto se necesita hacer una amplia
+investigación, así se podrá descartar aquellos que no se pueden integrar en el desarrollo del sistema
+[20][21]. Ahora, se describen otros trabajos relacionados
+
+Sistemas de recomendación de la literatura
+En [22], propusieron un sistema de recomendación de lugares de comida utilizando información de
+redes sociales para determinar las preferencias de grupos en un contexto multilingüe. Se evaluaron
+cuatro enfoques de recomendación diferentes. Esto incluye (1) un enfoque de referencia
+(popularidad independiente del idioma) (2) el enfoque propuesto (popularidad dependiente del
+idioma) (3) el enfoque propuesto con datos de calificación explícitos y (4) el enfoque propuesto con
+datos de opinión.
+Existen diversas técnicas de recomendación dependiendo lo que se requiera buscar, la mayoría
+de los sistemas de recomendación son de un solo objetivo con lo que se quiere decir que solo busca
+una cosa en general. Sin embargo, hoy en día se requieren mayor información de los restaurantes
+que cumplan con ciertos criterios, y surgen los sistemas de recomendación multiobjetivo. Tales
+como grupos, preferencias, y ambiente del restaurant, en [23] destaca la necesidad de hacer
+recomendaciones de objetivos múltiples y proporciona como solución la utilización de ranking de
+hipertrofia, usando un modelo de datos usuario atributo-contexto. Utilizando las bases de datos de
+Yelp.com. El modelo muestra mediante los experimentos dar una buena recomendación, y mejorar
+la precisión de respecto a otros trabajos.
+Existen muchos restaurantes que sirven una gran variedad de alimentos buscando satisfacer los
+diferentes gustos de sus clientes, y ellos puedan decidir dónde comer, En [24], presentan un sistema
+recomendación basado en el contenido del restaurante. El sistema de recomendación de
+restaurante consiste en tres módulos: módulo de selección de características, modelo de espacio
+vectorial y módulo de medida de similitud entre restaurantes, en el primer módulo selecciona de
+forma automática los atributos más relevantes, reduce la dimensionalidad y elimina los datos
+irrelevantes. Su metodología está basada en el método de correlación, y el de eliminación de
+características recursivas (RFE). El segundo modelo es utilizado para la descripción de atributos de
+un restaurante como precio, tipo de cocina, entre otros. El modelo utiliza Term frequency and
+inverse document frequency (TF-IDF). Y finalmente el tercer modulo utiliza el coseno de similaridad
+y la distancia euclidiana. El cual muestran el impacto del filtrado de características que mejoran el
+rendimiento del sistema.
+El crecimiento del comercio electrónico ha requerido una adaptación de las técnicas de marketing
+tradicionales, los comercios ahora hacen uso de los sistemas de recomendación para ayudar a los
+usuarios a encontrar productos mediante el uso de sistemas de recomendación [25]. Tomaron la
+información del contexto adicional que rodea a los usuarios en el momento de la compra, basado
+en las ofertas para dichos usuarios. Estas ofertas personalizadas, construyeron una relación entre el
+usuario y el comercio que ofrecía la oferta más apropiada, y de esta manera, ambos lados salían
+favorecidos.
+La idea fundamental en [26], fue aplicar técnicas que permitieran estimar las preferencias de los
+usuarios sobre cada uno de los ítems para luego recomendar a los usuarios aquellos ítems con mayor
+utilidad estimada. Para ello, el SR fue capaz de estimar las preferencias tanto los ítems evaluados
+como aquellos ítems que el usuario no había emitido opinión. Una vez estimadas las preferencias,
+las recomendaciones se efectuaron seleccionando los ítems de mayor utilidad para cada usuario.
+
+64
+
+Sistema de recomendación híbrido conversacional para restaurantes
+
+La Inteligencia Artificial continúa creciendo en popularidad en varias plataformas, volviéndose
+especialmente prominente en la tecnología Chatbot. Un chatbot es un programa diseñado para el
+contexto social y de asistencia, y su tecnología ha ido evolucionando con el tiempo. En [27]
+desarrolla un Chatbot basado en texto, que reconoce la entrada del usuario, así como mediante la
+coincidencia de patrones, la información de acceso para proporcionar una confirmación
+predefinida. Por ejemplo, si el usuario proporciona al bot una frase como "¿Cuál es su nombre?" Es
+muy probable que el chatbot responda algo como "Mi nombre es Chatbot". O el chatbot responde
+como "Puedes llamarme Chatbot".
+En [28] describen un ChatBot como un software que utiliza inteligencia artificial para chatear con
+personas. Se caracteriza por realizar tareas como responder rápidamente a los usuarios,
+informarles, ayudar a comprar productos y proporcionar un mejor servicio a los clientes. En este
+artículo, se presenta los principios y los conceptos básicos de chatbots basados en inteligencia
+artificial y conceptos relacionados, así como sus aplicaciones en diversos sectores como
+telecomunicaciones, banca, salud, centros de llamadas de clientes y comercio electrónico.
+El sistema Chatbot incrementó un gran interés en los últimos años en muchos diferentes campos,
+bajo la premisa de aumentar la eficiencia y acorta el tiempo de ejecución del proceso de negocios
+reemplazando la comunicación humano-humano, con conversaciones y consultas humano-máquina
+en lenguajes naturales. Los chatbots de hoy en día tienen diferentes niveles de capacidades como
+agentes de conversación de propósito general o chatbots orientados a tareas, así como sistemas de
+agente de dominio abierto y de dominio específico. Si bien los chatbots básicos pueden ser
+adecuados para la mayoría de los escenarios, algunos escenarios requieren chatbots más avanzados.
+En [29] presenta un sistema de chatbot distribuido para la cadena de suministro. Utiliza la
+comunicación WebSocket entre la interfaz de usuario y el bot, analiza la consulta del usuario y
+proporciona información de los pedidos y suministros consultados.
+En el presente trabajo se propone un sistema basado en la integración de un Sistema
+conversacional (chabot), un sistema basado en ubicación geográfica, y dos sistemas de
+recomendación personalizados (con datos de promociones y gustos frecuentes) para sugerir
+restaurantes a usuarios (consumidores). Este trabajo es diferente a los analizados en trabajos
+relacionados, dado que existen sistemas de recomendación de promociones, preferencias, y
+geográficos, pero funcionan combinando hasta dos sistemas de recomendación, pero no,
+combinado con un chatbot aquí presentado.
+3 Metodología
+En la figura 1 se muestra el esquema del sistema propuesto, se observan dos bloques que se detallan
+a continuación.
+Dentro del bloque Origen de datos, se contempló 2 formas de obtener información: la primer,
+aquella información proporcionada por los usuarios al momento de registrarse en la aplicación. El
+usuario introduce datos personales, gustos, preferencias de lugares, y platillos, además de la
+información de restaurantes que ofrecen promociones y servicios. La segunda, es por medio de
+aprendizaje que ya está registrado en la base de datos de respuestas a problemas técnicos resueltos
+con anterioridad. También, se encuentra el motor de recomendación en el cual se encuentran los
+algoritmos para la construcción de los sistemas de recomendación.
+
+A. Ramírez et al. / Abstraction & Application 29 (2020) 60 - 73
+
+65
+
+Fig. 1. Diagrama a bloques del Sistema Conversacional
+En el segundo bloque, está el Chatbot, permite la interacción entre el usuario y el motor de
+recomendación; se encarga de interpretar el conocimiento que genera el motor de recomendación,
+generado con cada búsqueda del usuario, y convertirlo a un lenguaje natural interpretable al usuario
+y viceversa. Posteriormente, es interpretado como datos de entrada por parte del usuario, se
+continúa con el aprendizaje máquina usando el analizador de lógica y reglas mediante el uso de
+bolsa de palabras, y, por último, la generación del leguaje natural que será la respuesta al usuario.
+Los métodos y algoritmos utilizados para construir estos bloques se detallan en seguida.
+Los sistemas de recomendación van a sugerir los restaurantes más idóneos basado en
+información relacionada sobre la ubicación, los restaurantes, los usuarios, y las interacciones entre
+restaurantes y usuarios. La característica más importante de los sistemas de recomendación aquí
+propuestos es su capacidad de descubrir las preferencias e intereses de un usuario mediante el
+análisis del comportamiento de este usuario y / o el comportamiento de otros usuarios para generar
+recomendaciones personalizadas [30][31].
+Cada restaurante tiene sus propias características. Por ejemplo, el restaurante A ofrece comida
+rápida, mientras que el restaurante B ofrece comida mexicana. Obviamente, la "comida rápida"
+puede considerarse como la característica del restaurante A, y la "comida mexicana" puede
+considerarse como la característica del restaurante B. Todas las características pueden formar un
+vector F = (f1, f2, ..., fn), donde fi presenta la característica i-ésima del restaurante. Dado un
+restaurante r, si r tiene fi, entonces fi será Uno, de lo contrario fi será Cero. De esta manera, las
+características y los restaurantes pueden formar una matriz como se muestra en la Fig. 2. En la
+matriz, las columnas representan las características y las filas representan los restaurantes. Si el iésimo restaurante tiene la característica j, entonces (ri, fj) = 1. Cabe señalar que cada restaurante
+puede tener una o más características.
+
+66
+
+Sistema de recomendación híbrido conversacional para restaurantes
+f1
+R
+r2
+…
+rj
+…
+
+f2
+
+...
+
+fj
+
+…
+
+fn
+
+1
+
+1
+
+rn
+
+Fig. 2. Matriz de características de restaurantes
+Tomando en cuenta las características de los restaurantes, estas características también pueden
+reflejar las preferencias del usuario. Por lo tanto, el vector de la preferencia P de un usuario puede
+representarse como P = (f1, f2, ..., fn). Cuando un usuario inicia sesión por primera vez en el sistema
+propuesto, se le pedirá que seleccione algunas características de preferencia de los restaurantes
+como el valor inicial del vector de preferencia del usuario. El valor de las características
+seleccionadas será Uno. La figura 3 muestra el modelo de preferencia del usuario. Dado un
+restaurante R, R tiene las características f2 y f3. Si un usuario en su visita consume de estas
+características en este restaurante, las funciones del restaurante se agregarán a las funciones de
+preferencia correspondientes del usuario.
+
+Fig. 3. Modelo de preferencias del usuario.
+Con el aumento de los restaurantes por consumo al visitarlos, las características preferidas por los
+usuarios serán cada vez más explícitas. El valor de las características de preferencia del usuario debe
+normalizarse usando la ecuación 1.
+
+(1)
+De esta manera, la Normalización (fi) estará limitada en [0, 1]. Para el vector de características de
+preferencia del usuario es P = (0, 2, 1, 1). Después de normalizado, el vector será P = (0, 0.5, 0.25,
+0.25).
+Dado un usuario u, cuyo vector de características de preferencia es Pu = (p1, p2, ..., pn), y dado un
+restaurante r, cuyo vector de características es Fr = (f1, f2, ..., fn). Para determinar si el usuario u
+prefiere o no, al restaurante r, el algoritmo propuesto adopta la similitud de coseno para calcular la
+similitud entre u y r. La ecuación 2, contempla la similitud del coseno entre u y r.
+
+A. Ramírez et al. / Abstraction & Application 29 (2020) 60 - 73
+
+67
+
+(2)
+Similitud (u, r) siempre estará entre [0, 1]. Si Similitud (u, r) está cerca de 1, u y r son muy similares.
+Por ejemplo, si Pu = (0, 0.5, 0.5, 0) y Fr = (0, 1, 0, 1), Similitud (u, r) será 0.5. Después de que el
+usuario consume en el restaurante r, Pu será (0, 0.5, 0.25, 0.25) y Similitud (u, r) será 0.86.
+Obviamente, si el usuario u consume en el restaurante r muchas veces, la similitud entre u y r
+aumentará. Por lo tanto, la similitud del coseno puede reflejar efectivamente el cambio de
+preferencia del usuario.
+Dado que el sistema de recomendación de restaurantes propuesto toma en cuenta que el usuario
+tiende a ir al restaurante más cercano en general. Por lo tanto, la distancia entre el usuario y el
+restaurante es un factor muy importante, que puede influir directamente en el resultado de la
+recomendación. En el sistema propuesto, se utilizan las posiciones de usuarios y restaurantes para
+categorizarlos. El sistema puede obtener la latitud y la longitud de la posición. Por lo tanto, el
+sistema puede calcular la distancia entre dos puntos cualquiera usando su latitud y longitud. Dado
+dos puntos (A (x1, y1), B (x2, y2)), suponga que x es la latitud e y es la longitud, a = cos (x1- x2), b =
+cos (y1- y2), c = cos x1 * cos x2, y RadioTierra es el radio de la tierra. La distancia entre A y B se
+calcula mediante la ecuación 3:
+
+(3)
+Cuando el usuario envió una solicitud de recomendación, el sistema propuesto obtiene los
+restaurantes cercanos en el área del radio R. Aquí, R es un radio modificable. Después de eso, la
+distancia entre el usuario y cada restaurante se calculará de acuerdo con la ecuación 3. La figura 4
+muestra la posición del usuario y restaurantes en el área de radio R.
+
+Fig. 4. Ubicación actual del usuario y restaurantes.
+
+68
+
+Sistema de recomendación híbrido conversacional para restaurantes
+
+Para determinar los resultados de la recomendación, la calificación de cada restaurante se calculó
+con la ecuación 4.
+
+𝐶𝑎𝑙𝑖𝑓𝑖𝑐𝑎𝑐𝑖ó𝑛 𝑢,𝑟𝑖 = 𝛼∗𝑆𝑖𝑚𝑖𝑙𝑎𝑟 𝑢,𝑟𝑖 +𝛽 ∗ 1−
+
+𝐷𝑖𝑠𝑡𝑎𝑛𝑐𝑖𝑎 𝑢,𝑟𝑖
+∗ƿ
+𝑅
+
+(4)
+
+Los valores de α, β, y ρ son pesos para manipular los criterios. Inicialmente se establecieron los
+siguientes valores, α = 0.40, β = 0.40, y ρ = 0.2. Según la fórmula (4.3), si dos restaurantes tienen la
+misma similitud, el más cercano obtendrá una calificación más alta, si no hubiese promociones. Por
+el contrario, si dos restaurantes se encuentran a la misma distancia del usuario y sin promociones,
+el más similar obtendrá una calificación más alta. La calificación es una compensación entre la
+similitud y la distancia, y con un extra si tuvieran una promoción. Según La calificación de cada
+restaurante, todos los restaurantes se ordenarán de mayor a menor. Los mejores restaurantes
+visitados por consumos se recomendarán al usuario.
+Por otra parte, para procesar al lenguaje, sus componentes: gramática, sintaxis y construir
+estructuras de apoyo que servirán como entrada para algoritmos de Regresión Lineal, Regresión
+Logística, Clasificador Naive Bayes, Clasificador árbol de decisión o Clasificador Redes Neuronales
+según el resultado que se busque, las siguientes técnicas comunes pueden usarse en NLP: Tokenizar,
+Tagging Part of Speech, Shallow parsing / Chunks, Significado de las palabras, Pragmatic Analysis,
+word2vect, y Bag of words. La técnica utilizada para este proyecto chatbot es la técnica de Bag of
+words debido a la simulación de palabras utilizadas en una conversación con el usuario que sirve
+para dar sugerencias a su búsqueda.
+En Bag of words, es necesario una forma de representar datos de texto para el algoritmo de
+aprendizaje automático. En este enfoque, se utilizan las palabras con token para cada observación
+y descubrir la frecuencia de cada token mediante el concepto de profundización. Considere las
+siguientes oraciones:
+• "Fue el mejor de los tiempos"
+• "Fue el peor de los tiempos"
+• "Era la era de la sabiduría"
+• "Era la era de la necedad"
+Se trata cada oración como un documento separado y se hace una lista de todas las palabras de los
+cuatro documentos, excluyendo la puntuación.
+'Es', 'fue', 'el', 'mejor', 'de', 'tiempos', 'peor', 'edad', 'sabiduría', 'necedad'.
+El siguiente paso es crear vectores. Se toma el primer documento: "Fue el mejor de los tiempos" y
+se verifica la frecuencia de las palabras de las 10 palabras únicas. “Fue” = 1, “el” = 1, “Mejor” = 1,
+“De” = 1, “tiempos” = 1, “peor” = 0, “edad” = 0, “sabiduría” = 0, y “necedad” = 0.
+El resto de los documentos serán:
+"Fue el mejor de los tiempos" = [1, 1, 1, 1, 1, 0, 0, 0, 0]
+"Fue el peor de los tiempos" = [1, 1, 0, 1, 1, 1, 0, 0, 0]
+
+A. Ramírez et al. / Abstraction & Application 29 (2020) 60 - 73
+
+69
+
+"Era la era de la sabiduría" = [1, 1, 0, 1, 0, 0, 1, 1, 0]
+"Era la era de la necedad” = [1, 1, 0, 1, 0, 0, 1, 0, 1]
+En este enfoque, cada palabra o token se llama "gramo". También se puede crear un vocabulario
+de pares de dos palabras, llamado modelo bigram. Los bigrams en el primer documento: "Fue el
+mejor de los tiempos" son los siguientes: "fue", "fue él", "el mejor", “de los tiempos".
+El proceso de convertir texto en el Procesamiento de Lenguaje Natural (NLP) en números se llama
+vectorización en Aprendizaje Máquina. Las diferentes formas de convertir texto en vectores son:
+contar la cantidad de veces que cada palabra aparece en un documento, y calcular la frecuencia con
+la que cada palabra aparece en un documento de todas las palabras en el documento.
+
+4 Resultados
+El sistema propuesto fue desarrollado en java, dado que será incorporado a una aplicación móvil
+comercial FoodExpressMR. Existen 20 categorías de preferencias a seleccionar como gustos
+predeterminados. Los datos de los restaurantes fueron tomados de la aplicación. Los datos de los
+usuarios fueron generados por los autores. Las herramientas software que se usaron fueron
+NetBeans 8.2, Xamp 3.2.4 y el servidor Tomcat. La figura 5, muestra la ejecución del proyecto.
+
+Fig. 5. Ejecución del proyecto desde NetBeans.
+En particular, se utilizó un enfoque de validación cruzada para evitar el sesgo causado por la
+selección de los conjuntos de entrenamiento y prueba [32]. La validación cruzada consiste en
+generar diferentes conjuntos de datos (un conjunto por partición que es un parámetro del
+procedimiento de validación) que luego se utilizó como entrada de entrenamiento y prueba. El
+procedimiento seleccionó iterativamente una partición como prueba y el resto como
+entrenamiento para evaluar un algoritmo y proporciona una media de las métricas obtenidas para
+cada iteración. Se realizó una validación cruzada con tres, cinco y siete particiones, repitiendo cinco
+veces y recopilando la media de la precisión (Métrica de las matrices de confusión). Más allá del tipo
+de datos a analizar, se quería saber la solidez de los tres sistemas de recomendación que forman el
+motor de recomendación para el sistema de recomendación conversacional, con respecto a la
+distribución de entrenamiento / prueba.
+
+70
+
+Sistema de recomendación híbrido conversacional para restaurantes
+
+Para cada par de calificaciones Calificación C (u, ri) (predicción del sistema propuesto) y C (u, ri)
+(calificación real no utilizada para entrenar del sistema propuesto), se aplicaron las métricas: error
+absoluto medio (MAE) y el error cuadrático medio (RMSE) [33]. MAE y RMSE nunca fueron
+negativos, pero cuanto más cerca están a cero, se mejora el rendimiento. Se observa que a medida
+que disminuye la base de entrenamiento (y por lo tanto aumenta la base de prueba), aumentan los
+errores. En el caso de del Sistema de recomendación por preferencia (SR-Preferencia), la
+dependencia del tamaño del conjunto de entrenamiento es mayor. También se puede observar que
+los resultados del Sistema de recomendación por distancia (SR-Distancia) tienen una clara ventaja
+sobre el Sistema de recomendación por preferencia, ya que MAE y RMSE son significativamente más
+bajos. Sin embargo, la diferencia con el Sistema de recomendación por preferencia no es tan
+significativa. Para aclarar este punto, se realizó una validación estadística con los resultados
+obtenidos para cada partición y en la técnica de validación cruzada de tres, cinco y siete particiones
+(34,33, y 33 resultados parciales por técnica), ver figura 6. Los resultados obtenidos se muestran en
+la tabla 1, usando un total de 100 usuarios).
+
+Fig. 6. Evaluación del error absoluto medio y el error cuadrático medio.
+Tabla 1. Resultados de la evaluación de MAE y RMSE aplicado a los 3 sistemas de recomendación
+con diferentes tamaños de Entrenamiento. Los números en negrita indican los mejores resultados.
+SR-Promoción
+Porcentaje de Entrenamiento
+85% de entrenamiento (7 particiones)
+80% de entrenamiento (5 particiones)
+66% de entrenamiento (3 particiones)
+SR-Distancia
+Porcentaje de Entrenamiento
+85% de entrenamiento (7 particiones)
+80% de entrenamiento (5 particiones)
+66% de entrenamiento (3 particiones)
+SR-Preferencia
+Porcentaje de Entrenamiento
+85% de entrenamiento (7 particiones)
+80% de entrenamiento (5 particiones)
+66% de entrenamiento (3 particiones)
+
+MAE
+0.72
+0.72
+0.73
+
+RMSE
+1.40
+1.40
+1.39
+
+MAE
+0.65
+0.65
+0.67
+
+RMSE
+1.37
+1.37
+1.38
+
+MAE
+1.35
+1.46
+1.83
+
+RMSE
+1.70
+1.81
+2.17
+
+La tabla 2 muestra los resultados de las métricas de las matrices de confusión para los sistemas de
+recomendación por a) preferencia, b) promoción y c) ubicación geográfica, comparando los 100
+datos reales contra los datos de predicción obtenidos. Los resultados obtenidos son satisfactorios
+dado que los valores obtenidos en macro-average-media fueron: por preferencia = 90%, promoción
+= 96% y para ubicación = 100%.
+
+A. Ramírez et al. / Abstraction & Application 29 (2020) 60 - 73
+
+71
+
+En las figuras 7.a, 7.b y 7.c se muestran las sugerencias obtenidas por los tres diferentes sistemas
+recomendadores como motor de recomendación para el sistema de recomendación conversacional.
+En la figura 7.a, se observa que es predominante el valor de la preferencia del restaurante por parte
+del cliente sobre la distancia. En la figura 7.b es predominante el restaurante con promoción y
+cercano a la ubicación actual. La figura 7.c es predominante el restaurante mas cercano y que tenga
+alguna de las preferencias del usuario.
+Tabla 2. Resultados de métricas de matriz de confusión para los sistemas de recomendación por a)
+preferencia, b) promoción y c) ubicación geográfica.
+
+Fig 7. Salida del Sistema de recomendación conversacional por a) preferencia del usuario, b)
+promoción y c) ubicación geográfica.
+
+Conclusiones
+En este trabajo se ha presentado un Sistema de recomendación conversacional, quien en su motor
+de recomendaciones utiliza un sistema de recomendación basado en ubicación geográfica, y dos
+sistemas de recomendación personalizados que sugieren restaurantes basado en promociones y
+gustos. Se utilizó un sistema de recomendación basado en filtro colaborativo, un sistema de
+
+72
+
+Sistema de recomendación híbrido conversacional para restaurantes
+
+recomendación basado en contenido y un sistema de recomendación basado en ubicaciones
+geográficas.
+Se alcanzó el objetivo en esta investigación, al verificar que el sistema de recomendación
+conversacional recomendó restaurantes con altas calificaciones, tomando en cuenta la información
+de los restaurantes visitados, promociones que se brindaban en el momento en que se solicitó la
+recomendación, e hizo una selección final por la ubicación en tiempo real del usuario y los
+restaurantes cercanos previamente filtrados.
+En el primer resultado obtenido, se demuestra mediante un algoritmo de K-medias, que existen
+grupos bien definidos entre los datos de platillos y restaurantes utilizados para las pruebas de este
+trabajo. En el segundo grupo de pruebas, se muestra cuando el sistema conversacional sugiere a un
+restaurante por la definición de sus preferencias al registrarse, igual, sugiere a un restaurante por
+la mejor promoción dada una fecha y finalmente, después de que el usuario realizó ciertos
+consumos, sugiere a un restaurante basado en las visitas, promociones y la distancia más corta
+referente a su ubicación.
+Se observa que el sistema de recomendación por distancia tiene un mejor rendimiento, dado que
+solo filtra los restaurantes tomando en cuenta el radio fijo y los restaurantes más cercanos. A
+continuación, se ubica el sistema de recomendación por promociones, dado que únicamente filtra
+si tiene el restaurante ofrece promoción y tasas de descuento. Finalmente, el de menor desempeño
+fue el sistema de recomendación por Preferencias.
+Al trabajo reportado aún falta agregar que la información dada por el usuario sea mediante
+comandos de voz. Probar nuevas modelos para integrar los tres sistemas de recomendación aquí
+propuestos.
+
+Agradecimientos
+Al Conacyt por el apoyo de beca para estudios de maestría.
+
+Referencias
+S. Owen, R. AnilT. Dunning and E. Friedman, “Mahout in action”, Manning Publication, 2011.
+O. E. González and S.M. Jacques. “Estado del arte en los sistemas de recomendación”, Research
+in Computing Science 135 (2017) pp. 25-40
+[3] Bokde, D. K., Girase, S., and Mukhopadhyay, D. An item-based collaborative itering using
+dimensionality reduction techniques on mahout framework, (2015).
+[4] Y. Sun and Y. Zhang, “Conversational Recommender System”, The 41st International ACM SIGIR
+Conference on Research & Development in Information Retrieval, June 2018 , pp. 235–244
+[5] D. Jannach, A. Manzoor, W. Cai and L. Chen “A Survey on Conversational Recommender
+Systems” ArXiv, abs/2004.00646, (2020)
+[6] R. Bavaresco, D. Silveira, E. Reis, J. Barbosa, R. Righi, C. Costa, R. Antunes, M. Gomes, C. Gatti,
+M. Vanzin, S.C. Junior, E. Silva and C. Moreira, “Conversational agents in business: A systematic
+literature review and future research directions”. Computer Science Review, 36, (2020)
+[7] E. Jain and S. K. Jain, "Categorizing Twitter users on the basis of their interests using
+Hadoop/Mahout platform," 2014 9th International Conference on Industrial and Information
+Systems (ICIIS), Gwalior, pp. 1-5,2014, doi: 10.1109/ICIINFS.2014.7036529.7
+[8] S. Bagchi, “Performance and Quality Assessment of Similarity Measures in Collaborative Filtering
+Using Mahout”, Precedia Computer Science 50, pp. 229-234, 2015
+[9] Apache Mahout, Obtenido de https://mahout.apache.org/users/recommender/recommenderdocumentation.html
+[10] M. Mansoury, R. Burke, A. Ordonez-Gauger and X. Sepulveda, “Automating recommender
+systems experimentation with librec-auto”, pp.
+500-501, September 2018
+10.1145/3240323.3241614.
+[1]
+[2]
+
+A. Ramírez et al. / Abstraction & Application 29 (2020) 60 - 73
+
+73
+
+[11] G. Guo, J. Zhang, Z. Sun, and N. Yorke-Smith. “LibRec: A Java library for recommender systems”.
+
+AMAP Workshop Proceedings, vol. 4, 2015.
+
+[12] LibRec. Obtenido de https://www.librec.net/dokuwiki/doku.php?id=introduction
+[13] Google
+Cloud,
+Obtenido
+de
+https://cloud.google.com/solutions/machine-
+
+learning/recommendation-system-tensorflow-overview
+
+[14] G. Goyal and S. Dhingra, "Hybrid tensorflow based portable document formatted recommender
+
+system," 2017 International Conference on I-SMAC (IoT in Social, Mobile, Analytics and Cloud)
+(I-SMAC), Palladam, 2017, pp. 357-363, doi: 10.1109/I-SMAC.2017.8058371.
+[15] https://surprise.readthedocs.io/en/stable/
+[16] G S, Ananth and K, Raghuveer, “A Movie and Book Recommender System using Surprise
+Recommendation”,February 21, 2020.
+[17] A.J.Fernandez-Garcia, L. Iribarne, A. Corral, J.Criado and J. Wang. A “Recommender system for
+component-based applications using machine learning techniques”, Knowledge-Based Systems,
+vol. 164, pp. 68-84, January 2019. 10.1016/j.knosys.2018.10.019.
+[18] A. Argyriou, M. González-Fierro and L. Zhang, “Microsoft recommenders: Best practices for
+production-ready recommendation systems”. In Companion Proceedings of the Web
+Conference 2020, WWW '20, pp. 50-51, New York, NY, USA. Association for Computing
+Machinery. April 2020.
+[19] Microsoft
+Azure, Obtenido de
+https://azure.microsoft.com/en-us/blog/buildingrecommender-systems-with-azure-machine-learning-service/
+[20] A. Costa, E. Fressato, F. Neto, M. Manzato and R. Campello “Case Recommender: A Flexible and
+Extensible Python Framework for Recommender Systems”, Proceeding of the 12 ACM, pp. 494495, September 2018.
+[21] A. da Costa, E. Fressato, F. Neto, M. Manzato and R. Campello, “Case Recommender: A Flexible
+and Extensible Python Framework for Recommender Systems”, In Proceedings of the 12th ACM
+Conference on Recommender Systems, pp. 494-495, September 2018
+[22] P. Siriyaya, Y. Nakaoka,Y. Wang, and Y. Kawai,. A food venue recommender system based on
+multilingual geo-tagged tweet analysis. pages 686-689. (2018)
+[23] M. Mao, J.Lu an J. Zhang, “Multiobjective e-commerce recommendations based on hypergraph
+
+ranking”, Information Sciences, january 2019 , Elsevier, pp. 269-287.
+Afoudi, M. Lazaar and M. Al Achhab,” Impact of feature selection on content-based
+recommendation system”, pp. 1-6 (2019).
+[25] A. Greenstein-Messica and L. Rokach, “Machine learning and operation research based method
+for promotion optimization of products with no price elasticity history ”, Electronic commerce
+Research and Aplications, (2019).
+[26] Y. Kai-Hao, S. Yuxuan, W.Chih-Yun, Y. Pu-Tai and W Chuan-Yu, “An Exploratory Study of the
+Promotion Effectiveness of Recommender Systems”, ICCMB 2020: Proceedings of the 2020 the
+3rd International Conference on Computers in Management and BusinessJanuary 2020, pp 135–
+140
+[27] M. Dahiya, “a Tool of conversation: Chatbot” Dept. of Computer Science, Maharaja Surajmal
+Institute, Janakpuri, India Corresponding www.ijcseonline.org (2017)
+[28] N. Albayrak, A. Özdemir and E. Zeydan, "An overview of artificial intelligence based chatbots and
+an example chatbot application," 2018 26th Signal Processing and Communications Applications
+Conference (SIU), Izmir, 2018, pp. 1-4.
+[29] S. Angelov and M. Lazarova, “E-Commerce Distributed Chatbot System”. Association for
+Computing Machinery, in Proceedings of the 9th Balkan Conference on Informatics. 2019,
+Artículo 8, páginas:1-8.
+[30] A. Noulas, S. Scellato, C. Mascolo, M. Pontil, “An empirical study of geographic user activity
+patterns in foursquare”, pp. 570-573 (2011).
+[31] M. Ye, P. Yin,W-C Lee,D-L. Lee, Exploiting Geographical Influence for Collaborative Point-ofinterest Recommendation. Proceedings of the 34th International ACM SIGIR Conference on
+Research and Development in Information Retrieval. (2011-01-01). pp. 325–334.
+[32] G.J. McLachlan, K.A Do and C. Ambroise, Analyzing microarray gene expression data. Wiley
+(2004).
+[33] D. Stroock, Probability Theory. Cambridge University Press. pp. 43. (2011). ISBN 978-0-52113250-3.
+[24] Y.
+
+
