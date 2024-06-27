@@ -1,0 +1,432 @@
+%    minted language=cpp,
+
+\documentclass[pdf,
+%8pt, 9pt, 10pt, 11pt, 12pt, 14pt, 17pt, 20pt
+serif,
+%handout,	% remove overlays
+compress,
+xcolor=table,
+dvipsnames,
+spanish,
+aspectratio=169]{beamer}
+
+\usepackage[algosection,lined]{algorithm2e}
+\usepackage{minted}
+\usepackage{tcolorbox}
+\tcbuselibrary{minted}
+
+%% Encoding, fonts, language
+\input{settings/pdflatex_setup}
+\usepackage{graphics}
+\usepackage{url}
+\usepackage{amsmath,amssymb,amsfonts,marvosym}
+\usepackage{ulem}			% to cross out text
+\usepackage{subfig}			% to cross out text
+\normalem
+\usepackage{ragged2e}
+\let\raggedright=\RaggedRight
+\input{settings/beamer_setup}
+\input{settings/biblatex_setup2.tex}
+
+\usepackage{datetime}
+\newdateformat{specialdate}{\twodigit{\THEDAY}-\twodigit{\THEMONTH}-\THEYEAR}
+%\newdateformat{specialdate}{\twodigit{\THEDAY}-\THEYEAR}
+\date{\specialdate\today}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% HEADER
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%\title[\arabic{page} ]{Advanced Computer Graphics}
+\title[Arrays]{Getting Started with OpenCV}
+% Sin subtitulos
+\subtitle[short]{Read, Display and Write an Image using OpenCV}
+% Corchetes: Solo apellidos de los integrantes, Llaves: Los nombres completos!!
+\author[-]{Torres Colorado Juan Daniel}
+\institute[UPV]{Polytechnic University of Victoria}
+\date[]{May-August 2024}
+\logo{\pgfimage[width=1cm,height=1cm]{graphics/logo_upv_transparente}}			% Logo on all slides (pdf,png,jpg,eps)
+\titlegraphic{\includegraphics[height=1.5cm]{graphics/logo_upv_transparente} \hfil \includegraphics[height=1.35cm]{graphics/python.png}}	% Logo on title slide
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% SLIDES
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% Configuracion para dibujar AUTOMATAS
+\usepackage{tikz}
+\usetikzlibrary{automata, positioning, arrows}
+
+\begin{document}
+
+% Diapositiva de título
+\begin{frame}[plain]
+  \titlepage
+\end{frame}
+
+\begin{frame}{Introduction (1)}
+We will use the following image to demonstrate all the functions here.
+
+\begin{center}
+    \includegraphics[width=0.4\linewidth]{graphics/input-image-for-demo-throughout-1024x682.jpg} \\
+    \footnotesize Example input image we will use throughout this blog.
+\end{center}
+First, go through this code example. It reads and displays the above image. See, how it contains all the three functions, we just mentioned. As you proceed further, we will discuss every single function used in this implementation. 
+
+\end{frame}
+
+\begin{frame}[fragile]{Introduction (2)}
+
+\begin{columns}
+\column{0.48\linewidth}
+\begin{block}{Python}
+\begin{minted}[linenos,fontsize=\tiny,bgcolor=LightGray]{python} 
+# import the cv2 library
+import cv2
+ 
+# The function cv2.imread() is used to read an image.
+img_grayscale = cv2.imread('test.jpg',0)
+ 
+# The function cv2.imshow() is used to display an image in a
+# window.
+cv2.imshow('graycsale image',img_grayscale)
+ 
+# waitKey() waits for a key press to close the window and 0
+# specifies indefinite loop
+cv2.waitKey(0)
+ 
+# cv2.destroyAllWindows() simply destroys all the windows we 
+# created.
+cv2.destroyAllWindows()
+ 
+# The function cv2.imwrite() is used to write an image.
+cv2.imwrite('grayscale.jpg',img_grayscale)
+\end{minted}
+\end{block}
+
+\column{0.47\linewidth}
+\begin{block}{C++}
+\begin{minted}[linenos,fontsize=\tiny,bgcolor=LightGray]{c++}
+//Include Libraries
+#include<opencv2/opencv.hpp>
+#include<iostream>
+ 
+// Namespace nullifies the use of cv::function(); 
+using namespace std;
+using namespace cv;
+ 
+// Read an image 
+Mat img_grayscale = imread("test.jpg", 0);
+ 
+// Display the image.
+imshow("grayscale image", img_grayscale); 
+ 
+// Wait for a keystroke.   
+waitKey(0);  
+ 
+// Destroys all the windows created                         
+destroyAllWindows();
+ 
+// Write the image in the same directory
+imwrite("grayscale.jpg", img_grayscale);
+\end{minted}
+\end{block}
+\end{columns}
+
+\end{frame}
+
+\begin{frame}[fragile]{Introduction (3)}
+\begin{columns}
+\column{0.48\linewidth}
+Let’s begin by importing the OpenCV library in Python and C++ (as shown below).
+
+\begin{block}{Python}
+\begin{minted}[linenos,fontsize=\tiny,bgcolor=LightGray]{python}
+# import the cv2 library 
+import cv2
+\end{minted}
+\end{block}
+
+\column{0.48\linewidth}
+In C++, use \#include (as shown below) to accomplish the same. Also specifying the namespaces for it lets you refer to function names directly. No need to prepend them with the namespace (e.g. instead of cv::imread(), you can just directly use read()).
+\begin{block}{C++}
+\begin{minted}[linenos,fontsize=\tiny,bgcolor=LightGray]{c++}
+//Include Libraries
+#include<opencv2/opencv.hpp>
+#include<iostream>
+ 
+// Namespace nullifies the use of cv::function(); 
+using namespace std;
+using namespace cv;
+\end{minted}
+\end{block}
+
+\end{columns}
+
+\end{frame}
+
+\begin{frame}[fragile]{Reading an Image (1)}
+For reading an image, use the imread() function in OpenCV. Here’s the syntax:
+\begin{minted}[bgcolor=LightGray,fontsize=\normalsize]{python} 
+imread(filename, flags)
+\end{minted}
+
+It takes two arguments:
+\begin{enumerate}
+    \item The first argument is the image name, which requires a fully qualified \textbf{pathname} to the file.
+    \item The second argument is an optional flag that lets you specify how the image should be represented. OpenCV offers several options for this flag, but those that are most common include:
+\end{enumerate}
+
+\begin{itemize}
+    \item [•] cv2.IMREAD\_UNCHANGED  or -1
+    \item [•] cv2.IMREAD\_GRAYSCALE  or 0
+    \item [•] cv2.IMREAD\_COLOR  or 1
+\end{itemize}
+
+\end{frame}
+
+\begin{frame}{Reading an Image (2)}
+The default value for flags is 1, which will read in the image as a Colored image.  When you want to read in an image in a particular format,  just specify the appropriate flag. To check out the different flag options, click \href{https://docs.opencv.org/4.x/d8/d6a/group\_\_imgcodecs\_\_flags.html\#ga61d9b0126a3e57d9277ac48327799c80}{here}.
+\\ \\
+It’s also important to note at this point that OpenCV reads color images in BGR format, whereas most other computer vision libraries use the RGB channel format order. So, when using OpenCV with other toolkits, don’t forget to swap the blue and red color channels, as you switch from one library to another.
+\\ \\
+As shown in the code sections below, we will first read in the test image, using all three flag values described above.
+\end{frame}
+
+\begin{frame}[fragile]{Reading an Image (3)}
+
+\begin{columns}
+\column{0.45\linewidth}
+\begin{block}{Python}
+\begin{minted}[linenos,fontsize=\tiny,bgcolor=LightGray]{python}
+# Read an image
+img_color = cv2.imread('test.jpg',cv2.IMREAD_COLOR)
+img_grayscale = cv2.imread('test.jpg',cv2.IMREAD_GRAYSCALE)
+img_unchanged = cv2.imread('test.jpg',cv2.IMREAD_UNCHANGED)
+\end{minted}
+\end{block}
+
+\begin{block}{C++}
+\begin{minted}[linenos,fontsize=\tiny,bgcolor=LightGray]{c++}
+// Read an image 
+Mat img_color = imread("test.jpg", IMREAD_COLOR);
+Mat img_grayscale = imread("test.jpg", IMREAD_GRAYSCALE);
+Mat img_unchanged = imread("test.jpg", IMREAD_UNCHANGED);
+\end{minted}
+\end{block}
+
+\column{0.03\linewidth}
+\begin{center}
+    \Large OR
+\end{center}
+
+\column{0.01\linewidth}
+
+\column{0.41\linewidth}
+\begin{block}{Python}
+\begin{minted}[linenos,fontsize=\tiny,bgcolor=LightGray]{python}
+img_color = cv2.imread('test.jpg',1)
+img_grayscale = cv2.imread('test.jpg',0)
+img_unchanged = cv2.imread('test.jpg',-1)
+\end{minted}
+\end{block}
+
+\begin{block}{C++}
+\begin{minted}[linenos,fontsize=\tiny,bgcolor=LightGray]{c++}
+Mat img_color = imread("test.jpg", 1);
+Mat img_grayscale = imread("test.jpg", 0);
+Mat img_unchanged = imread("test.jpg", -1);
+\end{minted}
+\end{block}
+
+\end{columns}
+
+\end{frame}
+
+\begin{frame}[fragile]{Displaying an Image (1)}
+In OpenCV, you display an image using the imshow() function. Here’s the syntax:
+\begin{minted}[bgcolor=LightGray,fontsize=\normalsize]{python} 
+imshow(window_name, image)
+\end{minted}
+
+This function also takes two arguments:
+\begin{enumerate}
+    \item The first argument is the window name that will be displayed on the window.
+    \item The second argument is the image that you want to display.
+\end{enumerate}
+\vspace{0.25cm}
+To display multiple images at once, specify a new window name for every image you want to display. 
+\\ \\
+The imshow() function is designed to be used along  with the waitKey() and destroyAllWindows() / destroyWindow() functions. 
+
+\end{frame}
+
+\begin{frame}[fragile]{Displaying an Image (2)}
+The waitKey() function is a keyboard-binding function. 
+\begin{itemize}
+    \item [•] It takes a single argument, which is the time (in milliseconds), for which the window will be displayed.
+    \item [•] If the user presses any key within this time period, the program continues.
+    \item [•] If 0 is passed, the program waits indefinitely for a keystroke.
+    \item [•] You can also set the function to detect specific keystrokes like the Q key or the ESC key on the keyboard, thereby telling more explicitly which key shall trigger which behavior. 
+\end{itemize}
+\vspace{0.25cm}
+The function destroyAllWindows() destroys all the windows we created. If a specific window needs to be destroyed, give that exact window name as the argument. Using destroyAllWindows() also clears the window or image from the main memory of the system.The code examples below show how the imshow() function is used to display the images you read in.
+
+\end{frame}
+
+\begin{frame}[fragile]{Displaying an Image (3)}
+
+\begin{columns}
+\column{0.48\linewidth}
+\begin{block}{Python}
+\begin{minted}[linenos,fontsize=\tiny,bgcolor=LightGray]{python} 
+#Displays image inside a window
+cv2.imshow('color image',img_color)  
+cv2.imshow('grayscale image',img_grayscale)
+cv2.imshow('unchanged image',img_unchanged)
+ 
+# Waits for a keystroke
+cv2.waitKey(0)  
+ 
+# Destroys all the windows created
+cv2.destroyAllwindows() 
+\end{minted}
+\end{block}
+
+\column{0.47\linewidth}
+\begin{block}{C++}
+\begin{minted}[linenos,fontsize=\tiny,bgcolor=LightGray]{c++}
+// Create a window.
+namedWindow( "color image", WINDOW_AUTOSIZE );
+namedWindow( "grayscale image", WINDOW_AUTOSIZE );
+namedWindow( "unchanged image", WINDOW_AUTOSIZE );
+ 
+// Show the image inside it.
+imshow( "color image", img_color ); 
+imshow( "grayscale image", img_grayscale );
+imshow( "unchanged image", img_unchanged ); 
+ 
+// Wait for a keystroke.   
+waitKey(0);  
+ 
+// Destroys all the windows created                         
+destroyAllWindows();
+\end{minted}
+\end{block}
+\end{columns}
+
+\end{frame}
+
+\begin{frame}[fragile]{Displaying an Image (4)}
+Below is the GIF demonstrating the process of executing the code, visualizing the outputs, and closing the output window:
+
+\vspace{0.7cm}
+\begin{columns}
+\column{0.48\linewidth}
+\centering
+\includegraphics[width=1\linewidth]{graphics/final_code_exam_min_1.png} 
+\column{0.48\linewidth}
+\centering
+\includegraphics[width=1\linewidth]{graphics/final_code_exam_min_2.png} 
+\end{columns}
+\end{frame}
+
+\begin{frame}[fragile]{Displaying an Image (5)}
+In the three output screens shown below, you can see:
+\begin{enumerate}
+    \item The first image is displayed in color
+    \item The next  as grayscale
+    \item The third is again in color, as this was the original format of the image (which was read using cv2.IMREAD\_UNCHANGED)
+\end{enumerate}
+
+\vspace{0.25cm}
+\begin{columns}
+\column{0.48\linewidth}
+\centering
+\includegraphics[width=0.8\linewidth]{graphics/result_1.png}
+\footnotesize
+Displaying an image in color using the imshow() function.
+
+\column{0.48\linewidth}
+\centering
+\includegraphics[width=0.8\linewidth]{graphics/result_2.png}
+\footnotesize
+Displaying an image in grayscale using the imshow() function.
+
+\end{columns}
+
+\end{frame}
+
+\begin{frame}[fragile]{Displaying an Image (6)}
+
+\centering
+\includegraphics[width=0.45\linewidth]{graphics/result_3.png} \\
+\footnotesize
+Displaying an unchanged image using the imshow() function.
+
+\end{frame}
+
+\begin{frame}[fragile]{Displaying an Image (7)}
+The below GIF shows execution of the code to read and display the image but without waitKey(). The window gets destroyed within milliseconds, and no output is shown on the screen.
+
+\vspace{0.7cm}
+\begin{columns}
+\column{0.48\linewidth}
+\centering
+\includegraphics[width=1\linewidth]{graphics/without_waitkay_1.png} 
+\column{0.48\linewidth}
+\centering
+\includegraphics[width=1\linewidth]{graphics/without_waitkay_2.png} 
+\end{columns}
+\end{frame}
+
+\begin{frame}[fragile]{Writing an Image (1)}
+Finally, let’s discuss how to write/save an image into the file directory, using the imwrite() function. Check out its syntax:
+\begin{minted}[bgcolor=LightGray,fontsize=\normalsize]{python} 
+imwrite(filename, image).
+\end{minted}
+
+\begin{enumerate}
+    \item The first argument is the filename, which must include the filename extension (for example .png, .jpg etc). OpenCV uses this filename extension to specify the format of the file. 
+    \item The second argument is the image you want to save. The function returns True if the image is saved successfully.
+\end{enumerate}
+
+\end{frame}
+
+\begin{frame}[fragile]{Writing an Image (2)}
+Take a look at the code below. See how simple it is to write images to disk. Just specify the filename with its proper extension (with any desired path prepended). Include the variable name that contains the image data, and you’re done. 
+
+\vspace{0.15cm}
+\begin{columns}
+\column{0.46\linewidth}
+\begin{block}{Python}
+\begin{minted}[linenos,fontsize=\tiny,bgcolor=LightGray]{python} 
+cv2.imwrite('grayscale.jpg',img_grayscale)
+\end{minted}
+\end{block}
+
+\column{0.46\linewidth}
+\begin{block}{C++}
+\begin{minted}[linenos,fontsize=\tiny,bgcolor=LightGray]{c++}
+imwrite("grayscale.jpg", img_grayscale);
+\end{minted}
+\end{block}
+\end{columns}
+
+\end{frame}
+
+\begin{frame}{Summary}
+Here, you learned to use the: 
+\begin{itemize}
+    \item [•] imread(), imshow() and imwrite() functions to read, display, and write images 
+    \item [•] waitKey() and destroyAllWindows() functions, along with the display function to 
+        \begin{itemize}
+            \item [•] close the image window on key press
+            \item [•] and clear any open image window from the memory. 
+        \end{itemize}
+\end{itemize}
+\vspace{0.25cm}
+You have to experiment a lot when it comes to the waitkey() function, for it can be quite confusing. The more familiar you get with it, the better you can use it. Do download the complete code to get some hands-on experience. Practice well, as these are the basic building blocks that can actually help you learn and master the OpenCV library → \href{https://colab.research.google.com/drive/1qVdz2ClR9x2Ig7IezGSnw1K8qhBGRoGU?usp=sharing}{OpenCV colab notebook}.
+\end{frame}
+
+\end{document}
